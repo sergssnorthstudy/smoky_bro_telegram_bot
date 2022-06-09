@@ -3,7 +3,8 @@ import string
 from aiogram import Bot, Dispatcher, executor, types
 import emoji
 import asyncio
-import request_db as db
+import requests_database.get_requests as get_requests
+import requests_database.post_requests as post_requests
 
 #Тут меняес API TOKEN
 API_TOKEN = '5554060477:AAF1S1mymxmuaaj0gi-oV5K9Kv-P5FaAJsk'
@@ -45,13 +46,13 @@ async def start(message: types.Message):
 
     #Start authorization
     user_id = message.from_user.id
-    is_incomplete_user = db.is_incomplete_user(user_id)
+    is_incomplete_user = get_requests.is_incomplete_user(user_id)
 
     if is_incomplete_user:
-        is_complete_user = db.is_complete_user(user_id)
+        is_complete_user = get_requests.is_complete_user(user_id)
         if is_complete_user:
             user_roles = list()
-            all_user_role = db.check_user_roles(user_id)
+            all_user_role = get_requests.check_user_roles(user_id)
             if all_user_role is not None:
                 for all_user_role in all_user_role:
                     user_roles.append(all_user_role)
@@ -123,11 +124,11 @@ async def start(message: types.Message):
         us_name = message.from_user.first_name
         us_sname = message.from_user.last_name
         user_link = message.from_user.username
-        db.record_incomplete_user(user_id=user_id, user_name=us_name, user_surname=us_sname, link=user_link)
-        is_complete_user = db.is_complete_user(user_id)
+        post_requests.record_incomplete_user(user_id=user_id, user_name=us_name, user_surname=us_sname, link=user_link)
+        is_complete_user = get_requests.is_complete_user(user_id)
         if is_complete_user:
             user_roles = list()
-            all_user_role = db.check_user_roles(user_id)
+            all_user_role = get_requests.check_user_roles(user_id)
             if all_user_role is not None:
                 for all_user_role in all_user_role:
                     user_roles.append(all_user_role)
@@ -191,8 +192,8 @@ async def start(message: types.Message):
 async def contact(message):
     if message.contact is not None:
         try:
-            db.record_user_phone(message.from_user.id, message.contact.phone_number)
-            db.record_user_role_buyer(message.from_user.id)
+            post_requests.record_user_phone(message.from_user.id, message.contact.phone_number)
+            post_requests.record_user_role_buyer(message.from_user.id)
             await bot.send_message(message.from_user.id, text=emoji.emojize(':white_check_mark: '
                                                                             'Мы успешно привязали ваш телефон к вашему аккаунту',
                                                                             language='alias'))
@@ -256,6 +257,9 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
                                text=emoji.emojize(
                                    'Выберите категорию, которая вас интересует :point_down:',
                                    language='alias'), reply_markup=keyboard_admin)
+
+
+
 
 
 if __name__ == '__main__':
