@@ -8,7 +8,6 @@ kb_add_products = InlineKeyboardButton(text=emoji.emojize(':heavy_plus_sign::boo
                                      callback_data='add_products')
 kb_add_products_in_shop = InlineKeyboardButton(text=emoji.emojize(':heavy_plus_sign::house:     Добавить товар в магазин', language='alias'),
                                        callback_data='add_products_in_shop')
-kb_add_category = InlineKeyboardButton(text=emoji.emojize(':heavy_plus_sign::1234:    Добавить брэнд', language='alias'),
-                                     callback_data='add_category')
+add_information.add(kb_add_brand)
 add_information.add(kb_add_products)
 add_information.add(kb_add_products_in_shop)

@@ -205,7 +205,7 @@ def check_similar_brand(brand:str) -> None:
         sql_select_query = 'SELECT * FROM Brands WHERE brand_name = ?'
         data = (brand,)
         cursor.execute(sql_select_query, data)
-        responce = cursor.fetchall()
+        responce = cursor.fetchone()
         if responce:
             if responce[1].lower() == brand.lower():
                 cursor.close()

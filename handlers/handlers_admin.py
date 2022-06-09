@@ -8,6 +8,8 @@ import requests_database.get_requests as get_requests
 import requests_database.post_requests as post_requests
 import keyboards.keyboards_admin as kb
 
+
+
 # Получить статистику
 @dp.message_handler(content_types=['text'], text=emoji.emojize(':bar_chart:    Получить статистику', language='alias'))
 async def timetable(message: types.Message):
@@ -120,11 +122,11 @@ async def timetable(message: types.Message):
             ':pensive: Ошибка при работе с Базой Данных', language='alias'))'''
 
 
-@dp.callback_query_handler(lambda callback_query: 'shop_add_data_' in callback_query.data)
+'''@dp.callback_query_handler(lambda callback_query: 'shop_add_data_' in callback_query.data)
 async def some_callback_handler(callback_query: types.CallbackQuery):
     user_id = callback_query.from_user.id
     callback_data = callback_query.data.split('shop_add_data_')
-    shop_id = callback_data[1]
+    shop_id = callback_data[1]'''
 
 
 @dp.message_handler(content_types=['text'], text=emoji.emojize(':heavy_plus_sign:    Добавить информацию', language='alias'))
@@ -167,31 +169,39 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
         if is_complete_user:
             user_is_admin = get_requests.check_user_is_admin(user_id)
             if user_is_admin:
+                await bot.answer_callback_query(callback_query.id)
                 await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
-                    'Напишите мне новый бренд или бренды, через запятую/n/n'
-                    'Пример №1:  "Добавить новый бренд HQD"/n'
-                    'Пример №2:  "Добавить новые бренды HQD,Smoke,Vaporlax"', language='alias'))
+                    'Напишите мне новый бренд или бренды\n\n'
+                    '<b>Пример №1:</b>  "Добавить новый бренд HQD"\n'
+                    '<b>Пример №2:</b>  "Добавить новые бренды HQD,Smoke,Vaporlax"', language='alias'),
+                                       parse_mode="HTML")
             elif user_is_admin == False:
+                await bot.answer_callback_query(callback_query.id)
                 await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
                     ':pensive: Вы не являетесь Администратором', language='alias'))
             else:
+                await bot.answer_callback_query(callback_query.id)
                 await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
                     ':pensive: Ошибка при работе с Базой Данных', language='alias'))
         elif is_complete_user == False:
+            await bot.answer_callback_query(callback_query.id)
             await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
                 ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
         else:
+            await bot.answer_callback_query(callback_query.id)
             await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
                 ':pensive: Ошибка при работе с Базой Данных', language='alias'))
     elif is_incomplete_user == False:
+        await bot.answer_callback_query(callback_query.id)
         await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
             ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
     else:
+        await bot.answer_callback_query(callback_query.id)
         await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
             ':pensive: Ошибка при работе с Базой Данных', language='alias'))
 
 
-@dp.message_handler(func = lambda message: 'Добавить новый бренд ' in message.text)
+@dp.message_handler(lambda message: 'Добавить новый бренд ' in message.text)
 async def timetable(message: types.Message):
     user_id = message.from_user.id
     is_incomplete_user = get_requests.is_incomplete_user(user_id)
@@ -204,9 +214,9 @@ async def timetable(message: types.Message):
                 brand = result[1]
                 if ',' in brand:
                     await bot.send_message(message.from_user.id, text=emoji.emojize(
-                        ':x: Вы написали: "Добавить новый бренд", но указываете несколько \n'
+                        ':x: Вы написали: "Добавить новый бренд", но указываете несколько брендов\n'
                         'Чтобы добавить один брэнд напишите как в примере \n\n'
-                        'Пример:  "Добавить новый бренд HQD"', language='alias'))
+                        '<b>Пример:</b> "Добавить новый бренд HQD"', language='alias'),parse_mode="HTML")
                 else:
                     brand = brand.strip()
                     is_brand_in_db = get_requests.check_similar_brand(brand)
@@ -241,7 +251,7 @@ async def timetable(message: types.Message):
             ':pensive: Ошибка при работе с Базой Данных', language='alias'))
 
 
-@dp.message_handler(func = lambda message: 'Добавить новые бренды HQD,Smoke,Vaporlax' in message.text)
+@dp.message_handler(lambda message: 'Добавить новые бренды' in message.text)
 async def timetable(message: types.Message):
     user_id = message.from_user.id
     is_incomplete_user = get_requests.is_incomplete_user(user_id)
@@ -273,7 +283,7 @@ async def timetable(message: types.Message):
                     await bot.send_message(message.from_user.id, text=emoji.emojize(
                         ':x: Вы написали: "Добавить новые бренды", но указали один брэнд или не напечатали ","\n'
                         'Чтобы добавить сразу несколько брэндов напишите как в примере \n\n'
-                        'Пример:  "Добавить новые бренды HQD,Smoke,Vaporlax"', language='alias'))
+                        '<b>Пример:</b> "Добавить новые бренды HQD,Smoke,Vaporlax"', language='alias'),parse_mode="HTML")
 
             elif user_is_admin == False:
                 await bot.send_message(message.from_user.id, text=emoji.emojize(
