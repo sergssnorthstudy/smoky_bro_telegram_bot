@@ -3,47 +3,21 @@ import string
 from aiogram import Bot, Dispatcher, executor, types
 import emoji
 import asyncio
+from settings.config import api_token
 import requests_database.get_requests as get_requests
 import requests_database.post_requests as post_requests
+from keyboards import keyboards_admin as kb
+from keyboards import keyboards_buyer as kb
+from keyboards import keyboards_seller as kb
+from keyboards import keyboards_common as kb
 
-#Тут меняес API TOKEN
-API_TOKEN = '5554060477:AAF1S1mymxmuaaj0gi-oV5K9Kv-P5FaAJsk'
 logging.basicConfig(level=logging.INFO)
-bot = Bot(token=API_TOKEN)
+bot = Bot(token = api_token)
 dp = Dispatcher(bot)
 
 
 @dp.message_handler(commands='start')
 async def start(message: types.Message):
-
-    #Keyboard seller
-    keyboard_seller = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb_sale = types.KeyboardButton(
-        text=emoji.emojize(':heavy_dollar_sign:    Продажа', language='alias'))
-    kb_search = types.KeyboardButton(text=emoji.emojize(':mag_right:    Поиск товара', language='alias'))
-    kb_history = types.KeyboardButton(
-        text=emoji.emojize(':book:    История продаж', language='alias'))
-    keyboard_seller.add(kb_sale)
-    keyboard_seller.add(kb_search)
-    keyboard_seller.add(kb_history)
-    # Keyboard buyer
-    keyboard_buyer = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb_items = types.KeyboardButton(
-        text=emoji.emojize(':mag_right:    Товары', language='alias'))
-    kb_shops = types.KeyboardButton(text=emoji.emojize(':house:    Магазины', language='alias'))
-    keyboard_buyer.add(kb_items)
-    keyboard_buyer.add(kb_shops)
-    # Keyboard admin
-    keyboard_admin = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb_statistics = types.KeyboardButton(
-        text=emoji.emojize(':bar_chart:    Получить статистику', language='alias'))
-    kb_edit_product = types.KeyboardButton(text=emoji.emojize(':arrows_clockwise:    Изменить кол-во товара', language='alias'))
-    kb_add_product = types.KeyboardButton(text=emoji.emojize(':heavy_plus_sign:    Добавить новый товар', language='alias'))
-    keyboard_admin.add(kb_statistics)
-    keyboard_admin.add(kb_edit_product)
-    keyboard_admin.add(kb_add_product)
-
-
     #Start authorization
     user_id = message.from_user.id
     is_incomplete_user = get_requests.is_incomplete_user(user_id)
@@ -62,17 +36,17 @@ async def start(message: types.Message):
                         await bot.send_message(message.from_user.id,
                                                text=emoji.emojize(
                                                    'Выберите категорию, которая вас интересует :point_down:',
-                                                   language='alias'), reply_markup=keyboard_buyer)
+                                                   language='alias'), reply_markup=kb.keyboard_buyer)
                     elif role == 2:
                         await bot.send_message(message.from_user.id,
                                                text=emoji.emojize(
                                                    'Выберите категорию, которая вас интересует :point_down:',
-                                                   language='alias'), reply_markup=keyboard_seller)
+                                                   language='alias'), reply_markup=kb.keyboard_seller)
                     elif role == 3:
                         await bot.send_message(message.from_user.id,
                                                text=emoji.emojize(
                                                    'Выберите категорию, которая вас интересует :point_down:',
-                                                   language='alias'), reply_markup=keyboard_admin)
+                                                   language='alias'), reply_markup=kb.keyboard_admin)
                 elif len(user_roles) > 1:
                     roles = list()
                     for user_role in user_roles:
@@ -133,17 +107,17 @@ async def start(message: types.Message):
                         await bot.send_message(message.from_user.id,
                                                text=emoji.emojize(
                                                    'Выберите категорию, которая вас интересует :point_down:',
-                                                   language='alias'), reply_markup=keyboard_buyer)
+                                                   language='alias'), reply_markup=kb.keyboard_buyer)
                     elif role == 2:
                         await bot.send_message(message.from_user.id,
                                                text=emoji.emojize(
                                                    'Выберите категорию, которая вас интересует :point_down:',
-                                                   language='alias'), reply_markup=keyboard_seller)
+                                                   language='alias'), reply_markup=kb.keyboard_seller)
                     elif role == 3:
                         await bot.send_message(message.from_user.id,
                                                text=emoji.emojize(
                                                    'Выберите категорию, которая вас интересует :point_down:',
-                                                   language='alias'), reply_markup=keyboard_admin)
+                                                   language='alias'), reply_markup=kb.keyboard_admin)
                 elif len(user_roles) > 1:
                     roles = list()
                     for user_role in user_roles:
@@ -189,34 +163,6 @@ async def start(message: types.Message):
 
 @dp.message_handler(content_types=['contact'])
 async def contact(message):
-    # Keyboard seller
-    keyboard_seller = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb_sale = types.KeyboardButton(
-        text=emoji.emojize(':heavy_dollar_sign:    Продажа', language='alias'))
-    kb_search = types.KeyboardButton(text=emoji.emojize(':mag_right:    Поиск товара', language='alias'))
-    kb_history = types.KeyboardButton(
-        text=emoji.emojize(':book:    История продаж', language='alias'))
-    keyboard_seller.add(kb_sale)
-    keyboard_seller.add(kb_search)
-    keyboard_seller.add(kb_history)
-    # Keyboard buyer
-    keyboard_buyer = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb_items = types.KeyboardButton(
-        text=emoji.emojize(':mag_right:    Товары', language='alias'))
-    kb_shops = types.KeyboardButton(text=emoji.emojize(':house:    Магазины', language='alias'))
-    keyboard_buyer.add(kb_items)
-    keyboard_buyer.add(kb_shops)
-    # Keyboard admin
-    keyboard_admin = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb_statistics = types.KeyboardButton(
-        text=emoji.emojize(':bar_chart:    Получить статистику', language='alias'))
-    kb_edit_product = types.KeyboardButton(
-        text=emoji.emojize(':arrows_clockwise:    Изменить кол-во товара', language='alias'))
-    kb_add_product = types.KeyboardButton(
-        text=emoji.emojize(':heavy_plus_sign:    Добавить новый товар', language='alias'))
-    keyboard_admin.add(kb_statistics)
-    keyboard_admin.add(kb_edit_product)
-    keyboard_admin.add(kb_add_product)
 
     user_id = message.from_user.id
     if message.contact is not None:
@@ -236,17 +182,17 @@ async def contact(message):
                         await bot.send_message(message.from_user.id,
                                                text=emoji.emojize(
                                                    'Выберите категорию, которая вас интересует :point_down:',
-                                                   language='alias'), reply_markup=keyboard_buyer)
+                                                   language='alias'), reply_markup=kb.keyboard_buyer)
                     elif role == 2:
                         await bot.send_message(message.from_user.id,
                                                text=emoji.emojize(
                                                    'Выберите категорию, которая вас интересует :point_down:',
-                                                   language='alias'), reply_markup=keyboard_seller)
+                                                   language='alias'), reply_markup=kb.keyboard_seller)
                     elif role == 3:
                         await bot.send_message(message.from_user.id,
                                                text=emoji.emojize(
                                                    'Выберите категорию, которая вас интересует :point_down:',
-                                                   language='alias'), reply_markup=keyboard_admin)
+                                                   language='alias'), reply_markup=kb.keyboard_admin)
                 elif len(user_roles) > 1:
                     roles = list()
                     for user_role in user_roles:
@@ -286,317 +232,30 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
     user_id = callback_query.from_user.id
     callback = callback_query.data.split('user_role_')
 
-    # Keyboard seller
-    keyboard_seller = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb_sale = types.KeyboardButton(
-        text=emoji.emojize(':heavy_dollar_sign:    Продажа', language='alias'))
-    kb_search = types.KeyboardButton(text=emoji.emojize(':mag_right:    Поиск товара', language='alias'))
-    kb_history = types.KeyboardButton(
-        text=emoji.emojize(':book:    История продаж', language='alias'))
-    keyboard_seller.add(kb_sale)
-    keyboard_seller.add(kb_search)
-    keyboard_seller.add(kb_history)
-    # Keyboard buyer
-    keyboard_buyer = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb_items = types.KeyboardButton(
-        text=emoji.emojize(':mag_right:    Товары', language='alias'))
-    kb_shops = types.KeyboardButton(text=emoji.emojize(':house:    Магазины', language='alias'))
-    keyboard_buyer.add(kb_items)
-    keyboard_buyer.add(kb_shops)
-    # Keyboard admin
-    keyboard_admin = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb_statistics = types.KeyboardButton(
-        text=emoji.emojize(':bar_chart:    Получить статистику', language='alias'))
-    kb_edit_product = types.KeyboardButton(
-        text=emoji.emojize(':arrows_clockwise:    Изменить кол-во товара', language='alias'))
-    kb_add_product = types.KeyboardButton(
-        text=emoji.emojize(':heavy_plus_sign:    Добавить новый товар', language='alias'))
-    keyboard_admin.add(kb_statistics)
-    keyboard_admin.add(kb_edit_product)
-    keyboard_admin.add(kb_add_product)
-
     role = callback[1]
     if role == 'buyer':
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(callback_query.from_user.id,
                                text=emoji.emojize(
                                    'Выберите категорию, которая вас интересует :point_down:',
-                                   language='alias'), reply_markup=keyboard_buyer)
+                                   language='alias'), reply_markup=kb.keyboard_buyer)
     elif role == 'seller':
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(callback_query.from_user.id,
                                text=emoji.emojize(
                                    'Выберите категорию, которая вас интересует :point_down:',
-                                   language='alias'), reply_markup=keyboard_seller)
+                                   language='alias'), reply_markup=kb.keyboard_seller)
     elif role == 'admin':
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(callback_query.from_user.id,
                                text=emoji.emojize(
                                    'Выберите категорию, которая вас интересует :point_down:',
-                                   language='alias'), reply_markup=keyboard_admin)
-
-#SELLER Sale
-@dp.message_handler(content_types=['text'], text=emoji.emojize(':heavy_dollar_sign:    Продажа', language='alias'))
-async def timetable(message: types.Message):
-    user_id = message.from_user.id
-    is_incomplete_user = get_requests.is_incomplete_user(user_id)
-    if is_incomplete_user:
-        is_complete_user = get_requests.is_complete_user(user_id)
-        if is_complete_user:
-            user_is_seller = get_requests.check_user_is_seller(user_id)
-            if user_is_seller:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    'Можете начинать продажу!!!!!', language='alias'))
-            elif user_is_seller == False:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Вы не являетесь продавцом, обратитесь к администратору', language='alias'))
-            else:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-        elif is_complete_user == False:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-        else:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-    elif is_incomplete_user == False:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-    else:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+                                   language='alias'), reply_markup=kb.keyboard_admin)
 
 
-#SELLER Search
-@dp.message_handler(content_types=['text'], text=emoji.emojize(':mag_right:    Поиск товара', language='alias'))
-async def timetable(message: types.Message):
-    user_id = message.from_user.id
-    is_incomplete_user = get_requests.is_incomplete_user(user_id)
-    if is_incomplete_user:
-        is_complete_user = get_requests.is_complete_user(user_id)
-        if is_complete_user:
-            user_is_seller = get_requests.check_user_is_seller(user_id)
-            if user_is_seller:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    'Можете начинать поиск!!!!!', language='alias'))
-            elif user_is_seller == False:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Вы не являетесь продавцом, обратитесь к администратору', language='alias'))
-            else:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-        elif is_complete_user == False:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-        else:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-    elif is_incomplete_user == False:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-    else:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-
-
-#SELLER History
-@dp.message_handler(content_types=['text'], text=emoji.emojize(':book:    История продаж', language='alias'))
-async def timetable(message: types.Message):
-    user_id = message.from_user.id
-    is_incomplete_user = get_requests.is_incomplete_user(user_id)
-    if is_incomplete_user:
-        is_complete_user = get_requests.is_complete_user(user_id)
-        if is_complete_user:
-            user_is_seller = get_requests.check_user_is_seller(user_id)
-            if user_is_seller:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    'Можете посмотреть историю продаж!!!!!', language='alias'))
-            elif user_is_seller == False:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Вы не являетесь продавцом, обратитесь к администратору', language='alias'))
-            else:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-        elif is_complete_user == False:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-        else:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-    elif is_incomplete_user == False:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-    else:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-
-
-#ADMIN Statistics
-@dp.message_handler(content_types=['text'], text=emoji.emojize(':bar_chart:    Получить статистику', language='alias'))
-async def timetable(message: types.Message):
-    user_id = message.from_user.id
-    is_incomplete_user = get_requests.is_incomplete_user(user_id)
-    if is_incomplete_user:
-        is_complete_user = get_requests.is_complete_user(user_id)
-        if is_complete_user:
-            user_is_admin = get_requests.check_user_is_admin(user_id)
-            if user_is_admin:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    'Можете посмотреть статистику!!!!!', language='alias'))
-            elif user_is_admin == False:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Вы не являетесь Администратором', language='alias'))
-            else:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-        elif is_complete_user == False:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-        else:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-    elif is_incomplete_user == False:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-    else:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-
-
-#ADMIN Update data
-@dp.message_handler(content_types=['text'], text=emoji.emojize(':arrows_clockwise:    Изменить кол-во товара', language='alias'))
-async def timetable(message: types.Message):
-    user_id = message.from_user.id
-    is_incomplete_user = get_requests.is_incomplete_user(user_id)
-    if is_incomplete_user:
-        is_complete_user = get_requests.is_complete_user(user_id)
-        if is_complete_user:
-            user_is_admin = get_requests.check_user_is_admin(user_id)
-            if user_is_admin:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    'Можете изменить кол-во товара!!!!!', language='alias'))
-            elif user_is_admin == False:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Вы не являетесь Администратором', language='alias'))
-            else:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-        elif is_complete_user == False:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-        else:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-    elif is_incomplete_user == False:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-    else:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-
-
-#ADMIN Add data
-@dp.message_handler(content_types=['text'], text=emoji.emojize(':heavy_plus_sign:    Добавить новый товар', language='alias'))
-async def timetable(message: types.Message):
-    user_id = message.from_user.id
-    is_incomplete_user = get_requests.is_incomplete_user(user_id)
-    if is_incomplete_user:
-        is_complete_user = get_requests.is_complete_user(user_id)
-        if is_complete_user:
-            user_is_admin = get_requests.check_user_is_admin(user_id)
-            if user_is_admin:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    'Можете добавить товар', language='alias'))
-            elif user_is_admin == False:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Вы не являетесь Администратором', language='alias'))
-            else:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-        elif is_complete_user == False:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-        else:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-    elif is_incomplete_user == False:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-    else:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-
-
-#Buyer Products
-@dp.message_handler(content_types=['text'], text=emoji.emojize(':mag_right:    Товары', language='alias'))
-async def timetable(message: types.Message):
-    user_id = message.from_user.id
-    is_incomplete_user = get_requests.is_incomplete_user(user_id)
-    if is_incomplete_user:
-        is_complete_user = get_requests.is_complete_user(user_id)
-        if is_complete_user:
-            user_is_buyer = get_requests.check_user_is_buyer(user_id)
-            if user_is_buyer:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    'Можете посмотреть товары', language='alias'))
-            elif user_is_buyer == False:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Вы не являетесь продавцом, обратитесь к администратору', language='alias'))
-            else:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-        elif is_complete_user == False:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-        else:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-    elif is_incomplete_user == False:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-    else:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-
-
-#Buyer Shops
-@dp.message_handler(content_types=['text'], text=emoji.emojize(':house:    Магазины', language='alias'))
-async def timetable(message: types.Message):
-    user_id = message.from_user.id
-    is_incomplete_user = get_requests.is_incomplete_user(user_id)
-    if is_incomplete_user:
-        is_complete_user = get_requests.is_complete_user(user_id)
-        if is_complete_user:
-            user_is_buyer = get_requests.check_user_is_buyer(user_id)
-            if user_is_buyer:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    'Можете посмотреть информацию по магазинам', language='alias'))
-            elif user_is_buyer == False:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Вы не являетесь продавцом, обратитесь к администратору', language='alias'))
-            else:
-                await bot.send_message(message.from_user.id, text=emoji.emojize(
-                    ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-        elif is_complete_user == False:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-        else:
-            await bot.send_message(message.from_user.id, text=emoji.emojize(
-                ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-    elif is_incomplete_user == False:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
-    else:
-        await bot.send_message(message.from_user.id, text=emoji.emojize(
-            ':pensive: Ошибка при работе с Базой Данных', language='alias'))
 
 
 
 if __name__ == '__main__':
+    from handlers import dp
     executor.start_polling(dp, skip_updates=False)
-    keyboard_buyer = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    kb_items = types.KeyboardButton(
-        text=emoji.emojize(':mag_right:    Товары', language='alias'))
-    kb_shops = types.KeyboardButton(text=emoji.emojize(':house:    Магазины', language='alias'))
-    keyboard_buyer.add(kb_items)
-    keyboard_buyer.add(kb_shops)

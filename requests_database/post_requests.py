@@ -1,8 +1,9 @@
 import sqlite3
+from settings.config import path_db
 
 def record_incomplete_user(user_id: int, user_name: str, user_surname: str, link: str)-> None:
     try:
-        sqlite_connection = sqlite3.connect('database/smokybro_db.db')
+        sqlite_connection = sqlite3.connect(path_db)
         cursor = sqlite_connection.cursor()
         print("Подключен к SQLite")
         insert_with_param = 'INSERT INTO Users (user_id, user_name, user_surname,user_link) VALUES (?, ?, ?, ?)'
@@ -23,7 +24,7 @@ def record_incomplete_user(user_id: int, user_name: str, user_surname: str, link
 
 def record_user_phone(user_id: int, phone_number : str) -> None:
     try:
-        sqlite_connection = sqlite3.connect('database/smokybro_db.db')
+        sqlite_connection = sqlite3.connect(path_db)
         cursor = sqlite_connection.cursor()
         print("Подключен к SQLite")
         insert_with_param = 'UPDATE Users SET user_phone = ? WHERE user_id = ?'
@@ -44,7 +45,7 @@ def record_user_phone(user_id: int, phone_number : str) -> None:
 
 def record_user_role_buyer(user_id: int) -> None:
     try:
-        sqlite_connection = sqlite3.connect('database/smokybro_db.db')
+        sqlite_connection = sqlite3.connect(path_db)
         cursor = sqlite_connection.cursor()
         print("Подключен к SQLite")
         role_id = 1
