@@ -9,10 +9,10 @@ def is_incomplete_user(user_id:int) -> bool:
         data = (user_id,)
         cursor.execute(sql_select_query, data)
         responce = cursor.fetchone()
-        if responce is not None:
+        if responce:
             cursor.close()
             return True
-        else:
+        elif not responce:
             print('Нет')
             cursor.close()
             return False
@@ -32,22 +32,21 @@ def check_user_roles(user_id: int) -> None:
         sqlite_connection = sqlite3.connect('database/smokybro_db.db')
         cursor = sqlite_connection.cursor()
         print("Подключен к SQLite")
-        user_role = 'Покупатель'
         sql_select_query = 'Select * FROM Roles WHERE user_id = ?'
         data = (user_id,)
         cursor.execute(sql_select_query, data)
         responce = cursor.fetchall()
-        if responce is not None:
+        if responce:
             cursor.close()
             return responce
-        else:
+        elif not responce:
             print('Нет')
             cursor.close()
             return None
     except sqlite3.Error as error:
         print("Ошибка при работе с SQLite", error)
         sqlite_connection.close()
-        return "exception"
+        return None
         print("Соединение с SQLite закрыто")
     finally:
         if sqlite_connection:
@@ -64,7 +63,7 @@ def is_complete_user(user_id: int) -> bool:
         data = (user_id,)
         cursor.execute(sql_select_query, data)
         responce = cursor.fetchone()
-        if responce[0] is not None:
+        if responce[0]:
             if str(responce[0]) != '':
                 cursor.close()
                 return True
@@ -72,7 +71,7 @@ def is_complete_user(user_id: int) -> bool:
                 print('Нет')
                 cursor.close()
                 return False
-        else:
+        elif not responce[0]:
             print('Нет')
             cursor.close()
             return False
@@ -81,6 +80,90 @@ def is_complete_user(user_id: int) -> bool:
         sqlite_connection.close()
         print("Соединение с SQLite закрыто")
         return None
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_user_is_seller(user_id: int) -> None:
+    try:
+        sqlite_connection = sqlite3.connect('database/smokybro_db.db')
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        role_id = 2
+        sql_select_query = 'Select * FROM Roles WHERE user_id = ? and role_id = ?'
+        data = (user_id,role_id)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return True
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_user_is_admin(user_id: int) -> None:
+    try:
+        sqlite_connection = sqlite3.connect('database/smokybro_db.db')
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        role_id = 3
+        sql_select_query = 'Select * FROM Roles WHERE user_id = ? and role_id = ?'
+        data = (user_id,role_id)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return True
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_user_is_buyer(user_id: int) -> None:
+    try:
+        sqlite_connection = sqlite3.connect('database/smokybro_db.db')
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        role_id = 1
+        sql_select_query = 'Select * FROM Roles WHERE user_id = ? and role_id = ?'
+        data = (user_id,role_id)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return True
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
     finally:
         if sqlite_connection:
             sqlite_connection.close()

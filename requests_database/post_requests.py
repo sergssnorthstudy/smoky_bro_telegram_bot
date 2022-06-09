@@ -47,9 +47,9 @@ def record_user_role_buyer(user_id: int) -> None:
         sqlite_connection = sqlite3.connect('database/smokybro_db.db')
         cursor = sqlite_connection.cursor()
         print("Подключен к SQLite")
-        user_role = 'Покупатель'
-        insert_with_param = 'INSERT INTO Roles (user_id, user_role) VALUES (?, ?)'
-        data = (user_id,user_role)
+        role_id = 1
+        insert_with_param = 'INSERT INTO Roles (user_id, role_id) VALUES (?, ?)'
+        data = (user_id,role_id)
         cursor.execute(insert_with_param, data)
         sqlite_connection.commit()
         print("Переменные Python успешно вставлены в таблицу Users")
