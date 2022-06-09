@@ -63,3 +63,24 @@ def record_user_role_buyer(user_id: int) -> None:
         if sqlite_connection:
             sqlite_connection.close()
             print("Соединение с SQLite закрыто")
+
+
+def add_brand(brand: str) -> None:
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        insert_with_param = 'INSERT INTO Brands (brand_name) VALUES (?)'
+        data = (brand,)
+        cursor.execute(insert_with_param, data)
+        sqlite_connection.commit()
+        print("Переменные Python успешно вставлены в таблицу Users")
+        cursor.close()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")

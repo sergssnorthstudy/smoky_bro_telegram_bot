@@ -195,3 +195,34 @@ def all_shops() -> None:
         if sqlite_connection:
             sqlite_connection.close()
             print("Соединение с SQLite закрыто")
+
+
+def check_similar_brand(brand:str) -> None:
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT * FROM Brands WHERE brand_name = ?'
+        data = (brand,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchall()
+        if responce:
+            if responce[1].lower() == brand.lower():
+                cursor.close()
+                return True
+            else:
+                cursor.close()
+                return False
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")

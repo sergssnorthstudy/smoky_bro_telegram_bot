@@ -9,7 +9,7 @@ kb_statistics = KeyboardButton(
     text=emoji.emojize(':bar_chart:    Получить статистику', language='alias'))
 kb_edit_product = KeyboardButton(
     text=emoji.emojize(':arrows_clockwise:    Изменить кол-во товара', language='alias'))
-kb_add_product = KeyboardButton(text=emoji.emojize(':heavy_plus_sign:    Добавить новый товар', language='alias'))
+kb_add_product = KeyboardButton(text=emoji.emojize(':heavy_plus_sign:    Добавить информацию', language='alias'))
 keyboard_admin.add(kb_statistics)
 keyboard_admin.add(kb_edit_product)
 keyboard_admin.add(kb_add_product)
