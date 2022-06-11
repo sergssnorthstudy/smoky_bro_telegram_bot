@@ -171,7 +171,7 @@ def check_user_is_buyer(user_id: int) -> None:
             print("Соединение с SQLite закрыто")
 
 
-def all_shops() -> None:
+def all_shops():
     try:
         sqlite_connection = sqlite3.connect(path_db)
         cursor = sqlite_connection.cursor()

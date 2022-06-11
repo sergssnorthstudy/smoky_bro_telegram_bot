@@ -30,9 +30,3 @@ kb_shops = KeyboardButton(text=emoji.emojize(':house:    Магазины', lang
 keyboard_buyer.add(kb_items)
 keyboard_buyer.add(kb_shops)
 
-# Клавиатура категорий и брендов
-keyboard_categories_and_brands = InlineKeyboardMarkup(resize_keyboard=True)
-kb_categories = InlineKeyboardButton(text=emoji.emojize('Все категории товаров', language='alias'),callback_data='all_categories_for_admin')
-kb_brands = InlineKeyboardButton(text=emoji.emojize('Все брэнды', language='alias'),callback_data='all_brands_for_admin')
-keyboard_categories_and_brands.add(kb_categories)
-keyboard_categories_and_brands.add(kb_brands)

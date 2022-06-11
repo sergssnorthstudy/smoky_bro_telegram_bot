@@ -331,7 +331,7 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
                                        parse_mode="HTML")
                 await bot.answer_callback_query(callback_query.id)
                 await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
-                    'Вы можете посмотреть существующие категории и бренды', language='alias'), reply_markup=kb_c.keyboard_categories_and_brands)
+                    'Вы можете посмотреть существующие категории и бренды', language='alias'), reply_markup=kb_a.keyboard_categories_and_brands)
 
                 '''markup_categories = types.InlineKeyboardMarkup(row_width=2)
                 all_categories = get_requests.get_all_categories()
@@ -723,7 +723,7 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
                                                           callback_data=f"add_products_in_shop_{categories_id}"))
 
                 await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
-                    'Выберите категорию, которую хотите заполнить :arrow_down:', language='alias'),reply_markup=markup_categories)
+                    ':arrow_down: Выберите категорию, которую хотите заполнить', language='alias'),reply_markup=markup_categories)
 
             elif user_is_admin == False:
                 await bot.answer_callback_query(callback_query.id)
@@ -762,9 +762,124 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
             if user_is_admin:
                 await bot.answer_callback_query(callback_query.id)
 
-                category_id = callback_query.data.split('add_products_in_shop_')[1]
+                category_id = int(callback_query.data.split('add_products_in_shop_')[1])
+
+                # Клавиатура товаров
+                keyboard_add_products_in_shop = types.InlineKeyboardMarkup(resize_keyboard=True)
+                kb_products = types.InlineKeyboardButton(text=emoji.emojize('Все товары', language='alias'),
+                                                   callback_data=f'products_in_shop_cat_{category_id}')
+                kb_shops = types.InlineKeyboardButton(text=emoji.emojize('Все магазины', language='alias'),
+                                                callback_data='products_in_shop_shops')
+                keyboard_add_products_in_shop.add(kb_products)
+                keyboard_add_products_in_shop.add(kb_shops)
+
+
                 if category_id == 1:
+                    await bot.answer_callback_query(callback_query.id)
+                    await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                        ':arrow_down: Вы можете посмотреть существующие товары и магазины ', language='alias'),reply_markup=keyboard_add_products_in_shop)
+                elif category_id == 2:
                     pass
+                elif category_id == 3:
+                    pass
+                elif category_id == 4:
+                    pass
+                elif category_id == 5:
+                    pass
+                elif category_id == 6:
+                    pass
+                elif category_id == 7:
+                    pass
+                else:
+                    await bot.answer_callback_query(callback_query.id)
+                    await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                        ':pensive: По всей видимости вы добавили новую категорию, но для нее не расписан алгоритм добавления товара\n'
+                        'Вам стоит обратится к разработчику данного бота', language='alias'))
+            elif user_is_admin == False:
+                await bot.answer_callback_query(callback_query.id)
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    ':pensive: Вы не являетесь Администратором', language='alias'))
+            else:
+                await bot.answer_callback_query(callback_query.id)
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+        elif is_complete_user == False:
+            await bot.answer_callback_query(callback_query.id)
+            await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
+        else:
+            await bot.answer_callback_query(callback_query.id)
+            await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+    elif is_incomplete_user == False:
+        await bot.answer_callback_query(callback_query.id)
+        await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+            ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
+    else:
+        await bot.answer_callback_query(callback_query.id)
+        await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+            ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+
+
+@dp.callback_query_handler(lambda callback_query: 'products_in_shop_shops' == callback_query.data)
+async def some_callback_handler(callback_query: types.CallbackQuery):
+    user_id = callback_query.from_user.id
+    is_incomplete_user = get_requests.is_incomplete_user(user_id)
+    if is_incomplete_user:
+        is_complete_user = get_requests.is_complete_user(user_id)
+        if is_complete_user:
+            user_is_admin = get_requests.check_user_is_admin(user_id)
+            if user_is_admin:
+                await bot.answer_callback_query(callback_query.id)
+
+                all_shops = get_requests.all_shops()
+                finish_text = create_text.create_view_shops(all_shops)
+                await bot.answer_callback_query(callback_query.id)
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    'Список магазинов\n\n'
+                    f'{finish_text}', language='alias'))
+            elif user_is_admin == False:
+                await bot.answer_callback_query(callback_query.id)
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    ':pensive: Вы не являетесь Администратором', language='alias'))
+            else:
+                await bot.answer_callback_query(callback_query.id)
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+        elif is_complete_user == False:
+            await bot.answer_callback_query(callback_query.id)
+            await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
+        else:
+            await bot.answer_callback_query(callback_query.id)
+            await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+    elif is_incomplete_user == False:
+        await bot.answer_callback_query(callback_query.id)
+        await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+            ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
+    else:
+        await bot.answer_callback_query(callback_query.id)
+        await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+            ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+
+
+@dp.callback_query_handler(lambda callback_query: 'products_in_shop_' in callback_query.data)
+async def some_callback_handler(callback_query: types.CallbackQuery):
+    user_id = callback_query.from_user.id
+    is_incomplete_user = get_requests.is_incomplete_user(user_id)
+    if is_incomplete_user:
+        is_complete_user = get_requests.is_complete_user(user_id)
+        if is_complete_user:
+            user_is_admin = get_requests.check_user_is_admin(user_id)
+            if user_is_admin:
+                await bot.answer_callback_query(callback_query.id)
+
+                category_id = int(callback_query.data.split('add_products_in_shop_')[1])
+                if category_id == 1:
+                    await bot.answer_callback_query(callback_query.id)
+                    await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                        ':arrow_down: Вы можете посмотреть существующие товары и магазины ', language='alias'),reply_markup=kb_a.keyboard_add_products_in_shop)
                 elif category_id == 2:
                     pass
                 elif category_id == 3:
