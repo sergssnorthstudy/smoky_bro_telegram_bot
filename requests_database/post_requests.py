@@ -31,7 +31,7 @@ def record_user_phone(user_id: int, phone_number : str) -> None:
         data = (phone_number, user_id)
         cursor.execute(insert_with_param, data)
         sqlite_connection.commit()
-        print("Переменные Python успешно вставлены в таблицу Users")
+        print("Переменные Python успешно обновлены в таблице Users")
         cursor.close()
     except sqlite3.Error as error:
         print("Ошибка при работе с SQLite", error)
@@ -53,7 +53,7 @@ def record_user_role_buyer(user_id: int) -> None:
         data = (user_id,role_id)
         cursor.execute(insert_with_param, data)
         sqlite_connection.commit()
-        print("Переменные Python успешно вставлены в таблицу Users")
+        print("Переменные Python успешно вставлены в таблицу Roles")
         cursor.close()
     except sqlite3.Error as error:
         print("Ошибка при работе с SQLite", error)
@@ -74,7 +74,35 @@ def add_brand(brand: str) -> None:
         data = (brand,)
         cursor.execute(insert_with_param, data)
         sqlite_connection.commit()
-        print("Переменные Python успешно вставлены в таблицу Users")
+        print("Переменные Python успешно вставлены в таблицу Brands")
+        cursor.close()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def add_product(category:str,brand:str,name:str) :
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        insert_with_param = 'INSERT INTO Products ( category_id, brand_id, item_name) SELECT Categories.category_id , Brands.brand_id, Crutch.item_name  ' \
+                            'FROM Categories,Brands ,Crutch Where Categories.category_name = ? and Brands.brand_name = ? and Crutch.item_name = ?'
+        data = (category,brand,'new_name')
+        cursor.execute(insert_with_param, data)
+        sqlite_connection.commit()
+
+        insert_with_param1 = 'UPDATE Products SET item_name = ? WHERE item_name = ?'
+        data1 = (name, 'new_name')
+        cursor.execute(insert_with_param1, data1)
+        sqlite_connection.commit()
+
+        print("Переменные Python успешно вставлены в таблицу Brands")
         cursor.close()
     except sqlite3.Error as error:
         print("Ошибка при работе с SQLite", error)
