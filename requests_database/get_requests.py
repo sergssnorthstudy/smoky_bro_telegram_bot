@@ -197,6 +197,58 @@ def all_shops():
             print("Соединение с SQLite закрыто")
 
 
+def all_сharging_types():
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'Select * FROM ChargingTypes'
+        cursor.execute(sql_select_query, )
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def all_size_charcoal():
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'Select * FROM SizeCharcoal'
+        cursor.execute(sql_select_query, )
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
 def check_similar_brand(brand:str) -> None:
     try:
         sqlite_connection = sqlite3.connect(path_db)
@@ -226,6 +278,9 @@ def check_similar_brand(brand:str) -> None:
         if sqlite_connection:
             sqlite_connection.close()
             print("Соединение с SQLite закрыто")
+
+
+
 
 
 def get_all_categories() -> list():
@@ -313,6 +368,143 @@ def check_similar_product(category:str,brand:str,name:str):
             print("Соединение с SQLite закрыто")
 
 
+def check_similar_disposable_cigarettes(item_id:int,shop_id:int,item_taste:str,item_count_traction:int,item_charging_type:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT item_id,shop_id,item_taste,item_count_traction,item_charging_type FROM DisposableСigarettes' \
+                           ' Where item_id = ? and shop_id = ? and item_taste = ? and item_count_traction = ? and item_charging_type = ?'
+        data = (item_id,shop_id,item_taste,item_count_traction,item_charging_type)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            if int(responce[0]) == item_id and int(responce[1]) == shop_id and \
+                    responce[2].lower() == item_taste.lower()  and int(responce[3]) == item_count_traction and \
+                    int(responce[4]) == item_charging_type:
+                cursor.close()
+                return True
+            else:
+                print('Нет')
+                cursor.close()
+                return False
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_similar_vaping_liquids(item_id:int,shop_id:int,item_taste:str,item_fortress:int,item_size:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT item_id,shop_id,item_taste,item_fortress,item_size FROM VapingLiquids' \
+                           ' Where item_id = ? and shop_id = ? and item_taste = ? and item_fortress = ? and item_size = ?'
+        data = (item_id,shop_id,item_taste,item_fortress,item_size)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            if int(responce[0]) == item_id and int(responce[1]) == shop_id and responce[2].lower() == item_taste.lower() \
+                    and int(responce[3]) == item_fortress and int(responce[4]) == item_size:
+                cursor.close()
+                return True
+            else:
+                print('Нет')
+                cursor.close()
+                return False
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_similar_hookah_tobacco(item_id:int,shop_id:int,item_taste:str,item_size:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT item_id,shop_id,item_taste,item_size FROM HookahTobacco' \
+                           ' Where item_id = ? and shop_id = ? and item_taste = ? and item_size = ?'
+        data = (item_id,shop_id,item_taste,item_size)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            if int(responce[0]) == item_id and int(responce[1]) == shop_id and responce[2].lower() == item_taste.lower() \
+                     and int(responce[4]) == item_size:
+                cursor.close()
+                return True
+            else:
+                print('Нет')
+                cursor.close()
+                return False
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_similar_hookah_charcoal(item_id:int,shop_id:int,item_count_in_box:int,item_size:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT item_id,shop_id,item_count_in_box,item_size FROM HookahCharcoal' \
+                           ' Where item_id = ? and shop_id = ? and item_count_in_box = ? and item_size = ? '
+        data = (item_id,shop_id,item_count_in_box,item_size)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            if int(responce[0]) == item_id and int(responce[1]) == shop_id and int(responce[2]) == item_count_in_box \
+                    and int(responce[3]) == item_size:
+                cursor.close()
+                return True
+            else:
+                print('Нет')
+                cursor.close()
+                return False
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
 def is_category_in_db(category):
     try:
         sqlite_connection = sqlite3.connect(path_db)
@@ -320,6 +512,60 @@ def is_category_in_db(category):
         print("Подключен к SQLite")
         sql_select_query = 'SELECT * FROM Categories WHERE category_name = ?'
         data = (category,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            cursor.close()
+            return True
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def is_product_in_db(item_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT * FROM Products WHERE item_id = ?'
+        data = (item_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            cursor.close()
+            return True
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def is_product_corresponds_category(item_id,category_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT * FROM Products WHERE item_id = ? and category_id = ?'
+        data = (item_id,category_id)
         cursor.execute(sql_select_query, data)
         responce = cursor.fetchone()
         if responce is not None:
@@ -352,6 +598,160 @@ def is_brand_in_db(brand):
         if responce is not None:
             cursor.close()
             return True
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_products_with_category(category_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT item_id,category_name,brand_name,item_name FROM Products INNER JOIN Categories ' \
+                           'INNER JOIN Brands ON Products.category_id = Categories.category_id and ' \
+                           'Products.brand_id = Brands.brand_id Where Products.category_id = ?'
+        data = (category_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_category_name(category_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT category_name FROM Categories WHERE category_id = ?'
+        data = (category_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            return responce[0]
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_similar_pod(item_id:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT item_id,shop_id FROM PodSystems' \
+                           ' Where item_id = ? and shop_id = ?'
+        data = (item_id,shop_id)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            if int(responce[0]) == item_id and int(responce[1]) == shop_id:
+                cursor.close()
+                return True
+            else:
+                print('Нет')
+                cursor.close()
+                return False
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_similar_electronic_devices(item_id:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT item_id,shop_id FROM ElectronicDevices' \
+                           ' Where item_id = ? and shop_id = ?'
+        data = (item_id,shop_id)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            if int(responce[0]) == item_id and int(responce[1]) == shop_id:
+                cursor.close()
+                return True
+            else:
+                print('Нет')
+                cursor.close()
+                return False
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_similar_pod_accessories(item_id:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT item_id,shop_id FROM PodSystemsAccessories' \
+                           ' Where item_id = ? and shop_id = ?'
+        data = (item_id,shop_id)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            if int(responce[0]) == item_id and int(responce[1]) == shop_id:
+                cursor.close()
+                return True
+            else:
+                print('Нет')
+                cursor.close()
+                return False
         elif responce is None:
             print('Нет')
             cursor.close()
