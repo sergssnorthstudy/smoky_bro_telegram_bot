@@ -280,6 +280,30 @@ def check_similar_brand(brand:str) -> None:
             print("Соединение с SQLite закрыто")
 
 
+def check_brand_in_id(brand_id:int) -> None:
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT * FROM Brands WHERE brand_id = ?'
+        data = (brand_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            cursor.close()
+            return True
+        elif responce is None:
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
 
 
 
@@ -618,7 +642,7 @@ def check_products_with_category(category_id):
         sqlite_connection = sqlite3.connect(path_db)
         cursor = sqlite_connection.cursor()
         print("Подключен к SQLite")
-        sql_select_query = 'SELECT item_id,category_name,brand_name,item_name FROM Products INNER JOIN Categories ' \
+        sql_select_query = 'SELECT item_id,category_name,brand_name,item_name,item_price FROM Products INNER JOIN Categories ' \
                            'INNER JOIN Brands ON Products.category_id = Categories.category_id and ' \
                            'Products.brand_id = Brands.brand_id Where Products.category_id = ?'
         data = (category_id,)
@@ -631,6 +655,33 @@ def check_products_with_category(category_id):
             print('Нет')
             cursor.close()
             return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_category_by_product(item_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT category_id FROM Products WHERE item_id = ?'
+        data = (item_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            cursor.close()
+            return responce[0]
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
     except sqlite3.Error as error:
         print("Ошибка при работе с SQLite", error)
         sqlite_connection.close()

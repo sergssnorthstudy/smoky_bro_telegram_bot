@@ -54,5 +54,7 @@ def create_view_products_with_category(products:list) -> str:
         product_category = product[1]
         product_brand = product[2]
         product_name = product[3]
-        finish_string += f"ID Товара: {product_id}  {product_brand} {product_name}\n"
+        product_price = product[4]
+        finish_string += f"<b>ID Товара: {product_id}</b>, Категория:  {product_category}," \
+                         f" Бренд:  {product_brand}, Название:  {product_name}, Цена:  {product_price}\n"
     return finish_string

@@ -1,5 +1,7 @@
 import sqlite3
 from settings.config import path_db
+from decimal import Decimal
+
 
 def record_incomplete_user(user_id: int, user_name: str, user_surname: str, link: str)-> None:
     try:
@@ -86,7 +88,7 @@ def add_brand(brand: str) -> None:
             print("Соединение с SQLite закрыто")
 
 
-def add_product(category:str,brand:str,name:str) :
+def add_product(category:str,brand:str,name:str,item_price) :
     try:
         sqlite_connection = sqlite3.connect(path_db)
         cursor = sqlite_connection.cursor()
@@ -97,8 +99,8 @@ def add_product(category:str,brand:str,name:str) :
         cursor.execute(insert_with_param, data)
         sqlite_connection.commit()
 
-        insert_with_param1 = 'UPDATE Products SET item_name = ? WHERE item_name = ?'
-        data1 = (name, 'new_name')
+        insert_with_param1 = 'UPDATE Products SET item_name = ?,item_price =? WHERE item_name = ?'
+        data1 = (name,item_price, 'new_name')
         cursor.execute(insert_with_param1, data1)
         sqlite_connection.commit()
 
@@ -113,6 +115,32 @@ def add_product(category:str,brand:str,name:str) :
             sqlite_connection.close()
             print("Соединение с SQLite закрыто")
 
+
+def update_product(brand:str,name:str,item_price,item_id:int) :
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        insert_with_param = "UPDATE Products " \
+                            "SET brand_id = (SELECT brand_id FROM Brands WHERE brand_name = ?), " \
+                            "item_name = ?, " \
+                            "item_price = ? " \
+                            "WHERE Products.item_id = ?"
+        data = (brand,name,item_price,item_id)
+        cursor.execute(insert_with_param, data)
+        sqlite_connection.commit()
+        print("Переменные Python успешно вставлены в таблицу Brands")
+        cursor.close()
+        return True
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        print("Соединение с SQLite закрыто")
+        return False
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
 
 
 def add_disposable_cigarettes_in_shop(item_id:int,shop_id:int,item_taste:str,item_count_traction:int, item_charging_type:int ,item_count:int) :
@@ -255,7 +283,7 @@ def add_electronic_devices(item_id:int,shop_id:int,item_count:int) :
 
 
 
-def add_pod_accessories(item_id:int,shop_id:int,item_count:int) :
+def add_pod_accessories(item_id:int,shop_id:int,item_count:int):
     try:
         sqlite_connection = sqlite3.connect(path_db)
         cursor = sqlite_connection.cursor()
@@ -266,6 +294,29 @@ def add_pod_accessories(item_id:int,shop_id:int,item_count:int) :
         cursor.execute(insert_with_param, data)
         sqlite_connection.commit()
         print("Переменные Python успешно вставлены в таблицу Brands")
+        return True
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        print("Соединение с SQLite закрыто")
+        return False
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+
+def update_brand_in_id(brand_id:int,brand_name:str):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        insert_with_param =  'UPDATE Brands SET brand_name = ? WHERE brand_id = ?'
+        data = (brand_name,brand_id)
+        cursor.execute(insert_with_param, data)
+        sqlite_connection.commit()
+        print("Переменные Python успешно обновлены в таблицу Brands")
         return True
     except sqlite3.Error as error:
         print("Ошибка при работе с SQLite", error)
