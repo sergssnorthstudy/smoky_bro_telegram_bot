@@ -541,7 +541,7 @@ async def timetable(message: types.Message):
                     elif category_in_db and brand_in_db == False:
                         await bot.send_message(message.from_user.id, text=emoji.emojize(
                             f':x: Бренда "{brand}" не существует в Базе Данных\n'
-                            f'Вам следует сначал добавить категорию, а потом создавать продукт', language='alias'))
+                            f'Вам следует сначал добавить бренд, а потом создавать продукт', language='alias'))
                     elif category_in_db == False and brand_in_db == False:
                         await bot.send_message(message.from_user.id, text=emoji.emojize(
                             f':x: Категории "{category}" не существует в Базе Данных\n'
@@ -620,7 +620,7 @@ async def timetable(message: types.Message):
                         elif category_in_db and brand_in_db == False:
                             await bot.send_message(message.from_user.id, text=emoji.emojize(
                                 f':x: Бренда "{brand}" не существует в Базе Данных\n'
-                                f'Вам следует сначал добавить категорию, а потом создавать продукт', language='alias'))
+                                f'Вам следует сначал добавить бренд, а потом создавать продукт', language='alias'))
                         elif category_in_db == False and brand_in_db == False:
                             await bot.send_message(message.from_user.id, text=emoji.emojize(
                                 f':x: Категории "{category}" не существует в Базе Данных\n'
@@ -1068,9 +1068,9 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
                             await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
                                 f'Напишите мне какие {categoty_name.lower()} и в какие магазины вы хотите добавить\n\n'
                                 'Структура товара в магазине такая:\n(№ Магазина),(ID Товара),(Вкус),(Объем),(Кол-во штук)\n\n'
-                                f'<b>Пример №1:</b>  "Добавить {short_cat.lower()}: 1,23,Шишки,50,120,15"\n'
-                                f'<b>Пример №2:</b>  "Добавить {categoty_name.lower()}: 1,23,Шишки,50,120,15\n'
-                                f'1,37,Тархун,40,90,20"', language='alias'),
+                                f'<b>Пример №1:</b>  "Добавить {short_cat.lower()}: 1,23,Шишки,20,15"\n'
+                                f'<b>Пример №2:</b>  "Добавить {categoty_name.lower()}: 1,23,Шишки,30,15\n'
+                                f'1,37,Тархун,30,20"', language='alias'),
                                                    parse_mode="HTML")
                 elif category_id == 7:
                     if categoty_name is not None:
@@ -2042,7 +2042,7 @@ async def timetable(message: types.Message):
                         ':x: Вы написали: "Добавить кальянный табак:", но указываете несколько табаков\n'
                         'Чтобы добавить один кальянный табак, напишите как в примере: \n\n'
                         'Структура товара в магазине такая:\n(№ Магазина),(ID Товара),(Вкус),(Объем),(Кол-во штук)\n\n'
-                        f'<b>Пример:</b>  "Добавить кальянный табак: 1,35,Кислые мишки,50,30,15"', language='alias'),
+                        f'<b>Пример:</b>  "Добавить кальянный табак: 1,35,Кислые мишки,30,15"', language='alias'),
                                                    parse_mode="HTML")
                 else:
                     hookah_tobacco = hookah_tobacco.strip()
@@ -2179,8 +2179,8 @@ async def timetable(message: types.Message):
                         ':x: Вы написали: "Добавить кальянные табаки:", но указываете один кальянный табак\n'
                         'Чтобы добавить несколько кальянных табаков, напишите как в примере: \n\n'
                         'Структура товара в магазине такая:\n(№ Магазина),(ID Товара),(Вкус),(Объем),(Кол-во штук)\n\n'
-                        f'<b>Пример:</b>  "Добавить кальянные табаки: 1,23,Шишки,50,120,15\n'
-                        f'1,37,Тархун,40,90,20"', language='alias'),
+                        f'<b>Пример:</b>  "Добавить кальянные табаки: 1,23,Шишки,30,15\n'
+                        f'1,37,Тархун,30,20"', language='alias'),
                                                    parse_mode="HTML")
 
             elif user_is_admin == False:
@@ -2316,13 +2316,15 @@ async def timetable(message: types.Message):
                             is_product_corresponds_category = get_requests.is_product_corresponds_category(item_id,
                                                                                                            category_id)
                             if is_product_corresponds_category:
-                                vaping_pod_in_db = get_requests.check_similar_pod(item_id, shop_id)
-                                if vaping_pod_in_db:
+                                electronic_devices_in_db = get_requests.check_similar_electronic_devices(item_id,
+                                                                                                         shop_id)
+                                if electronic_devices_in_db:
                                     await bot.send_message(message.from_user.id, text=emoji.emojize(
                                         f':x: Продукт ID {item_id} уже существует в магазине №{shop_id}',
                                         language='alias'))
-                                elif vaping_pod_in_db == False:
-                                    successfully_recorded = post_requests.add_vaping_pod(item_id, shop_id, item_count)
+                                elif electronic_devices_in_db == False:
+                                    successfully_recorded = post_requests.add_electronic_devices(item_id, shop_id,
+                                                                                                 item_count)
                                     if successfully_recorded:
                                         await bot.send_message(message.from_user.id, text=emoji.emojize(
                                             f':white_check_mark: Я успешно записал {item_count} шт. продукта ID {item_id} в магазин №{shop_id}',
@@ -2335,7 +2337,8 @@ async def timetable(message: types.Message):
                                         ':pensive: Ошибка при работе с Базой Данных', language='alias'))
                             elif is_product_corresponds_category == False:
                                 await bot.send_message(message.from_user.id, text=emoji.emojize(
-                                    f':x: Предмет с ID {item_id} не является "POD системой"', language='alias'))
+                                    f':x: Предмет с ID {item_id} не является "Электронным устройством"',
+                                    language='alias'))
                             else:
                                 await bot.send_message(message.from_user.id, text=emoji.emojize(
                                     ':pensive: Ошибка при работе с Базой Данных', language='alias'))
@@ -2529,6 +2532,252 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
             ':pensive: Ошибка при работе с Базой Данных', language='alias'))
 
 
+# Изменить товар в магазине
+@dp.callback_query_handler(lambda callback_query: 'edit_products_in_shop' == callback_query.data)
+async def some_callback_handler(callback_query: types.CallbackQuery):
+    user_id = callback_query.from_user.id
+    is_incomplete_user = get_requests.is_incomplete_user(user_id)
+    if is_incomplete_user:
+        is_complete_user = get_requests.is_complete_user(user_id)
+        if is_complete_user:
+            user_is_admin = get_requests.check_user_is_admin(user_id)
+            if user_is_admin:
+
+                markup_all_shops = types.InlineKeyboardMarkup(row_width=2)
+                all_shops = get_requests.all_shops()
+                for shop in all_shops:
+                    shop_id = shop[0]
+                    shop_city = shop[1]
+                    shop_street = shop[2]
+                    shop_house = shop[3]
+                    markup_all_shops.add(types.InlineKeyboardButton(text=f'№{shop_id} г.{shop_city}, ул.{shop_street}, д.{shop_house}',
+                                                                     callback_data=f"edit_products_in_shop_{shop_id}"))
+                await bot.answer_callback_query(callback_query.id)
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    ':arrow_down: Выберите магазин, в который хотите внести изменения', language='alias'),
+                                       reply_markup=markup_all_shops)
+
+            elif user_is_admin == False:
+                await bot.answer_callback_query(callback_query.id)
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    ':pensive: Вы не являетесь Администратором', language='alias'))
+            else:
+                await bot.answer_callback_query(callback_query.id)
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+        elif is_complete_user == False:
+            await bot.answer_callback_query(callback_query.id)
+            await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
+        else:
+            await bot.answer_callback_query(callback_query.id)
+            await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+    elif is_incomplete_user == False:
+        await bot.answer_callback_query(callback_query.id)
+        await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+            ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
+    else:
+        await bot.answer_callback_query(callback_query.id)
+        await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+            ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+
+
+#Изменить товар в магазине
+@dp.callback_query_handler(lambda callback_query: 'edit_products_in_shop_' in callback_query.data)
+async def some_callback_handler(callback_query: types.CallbackQuery):
+    user_id = callback_query.from_user.id
+    is_incomplete_user = get_requests.is_incomplete_user(user_id)
+    if is_incomplete_user:
+        is_complete_user = get_requests.is_complete_user(user_id)
+        if is_complete_user:
+            user_is_admin = get_requests.check_user_is_admin(user_id)
+            if user_is_admin:
+                shop_id = int(callback_query.data.split('edit_products_in_shop_')[1])
+                shop = get_requests.get_shop_by_id(shop_id)
+                shop_id = shop[0]
+                shop_city = shop[1]
+                shop_street = shop[2]
+                shop_house = shop[3]
+                markup_shop = types.InlineKeyboardMarkup()
+                markup_shop.add(types.InlineKeyboardButton(text=f'Все товары',
+                                                                 callback_data=f"info_product_in_shop_{shop_id}"))
+
+                await bot.answer_callback_query(callback_query.id)
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    'Напишите мне у какого товара вы хотите изменить кол-во\n'
+                    '',
+                    language='alias'),
+                                       parse_mode="HTML")
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    f'Вы можете посмотреть все товары в магазине: №{shop_id} г.{shop_city}, ул.{shop_street}, д.{shop_house}', language='alias'),
+                                       reply_markup=markup_shop)
+
+
+            elif user_is_admin == False:
+                await bot.answer_callback_query(callback_query.id)
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    ':pensive: Вы не являетесь Администратором', language='alias'))
+            else:
+                await bot.answer_callback_query(callback_query.id)
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+        elif is_complete_user == False:
+            await bot.answer_callback_query(callback_query.id)
+            await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
+        else:
+            await bot.answer_callback_query(callback_query.id)
+            await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+    elif is_incomplete_user == False:
+        await bot.answer_callback_query(callback_query.id)
+        await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+            ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
+    else:
+        await bot.answer_callback_query(callback_query.id)
+        await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+            ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+
+
+
+@dp.callback_query_handler(lambda callback_query: 'info_product_in_shop_' in callback_query.data)
+async def some_callback_handler(callback_query: types.CallbackQuery):
+    user_id = callback_query.from_user.id
+    is_incomplete_user = get_requests.is_incomplete_user(user_id)
+    if is_incomplete_user:
+        is_complete_user = get_requests.is_complete_user(user_id)
+        if is_complete_user:
+            user_is_admin = get_requests.check_user_is_admin(user_id)
+            if user_is_admin:
+                shop_id = int(callback_query.data.split('info_product_in_shop_')[1])
+
+                disposable_cigarettes = get_requests.get_disposable_cigarettes_by_shopid(shop_id)
+                if disposable_cigarettes:
+                    disposable_cigarettes_text = create_text.create_view_disposable_cigarettes(disposable_cigarettes)
+                elif disposable_cigarettes == False:
+                    disposable_cigarettes_text  = "<b>Одноразовые сигареты</b>\n" \
+                                                                 "Список пуст"
+                else:
+                    disposable_cigarettes_text = "<b>Одноразовые сигареты</b>\n" \
+                                                                 "Возникли ошибки при работе с базой данных"
+
+
+                vaping_liquids = get_requests.get_vaping_liquids_by_shopid(shop_id)
+                if vaping_liquids:
+                    vaping_liquids_text = create_text.create_view_vaping_liquids(vaping_liquids)
+                elif vaping_liquids == False:
+                    vaping_liquids_text = "<b>Жидкости</b>\n" \
+                                                                 "Список пуст"
+                else:
+                    vaping_liquids_text = "<b>Жидкости</b>\n" \
+                                    "Возникли ошибки при работе с базой данных"
+
+
+                pod_systems = get_requests.get_pod_systems_by_shopid(shop_id)
+                if pod_systems:
+                    pod_systems_text = create_text.create_view_pod_systems(pod_systems)
+                elif pod_systems == False:
+                    pod_systems_text = "<b>POD системы</b>\n" \
+                                          "Список пуст"
+                else:
+                    pod_systems_text = "<b>POD системы</b>\n" \
+                                          "Возникли ошибки при работе с базой данных"
+
+                pod_systems_accessories = get_requests.get_pod_systems_accessories_by_shopid(shop_id)
+                if pod_systems_accessories:
+                    pod_systems_accessories_text = create_text.create_view_pod_systems_accessories(pod_systems_accessories)
+                elif pod_systems_accessories == False:
+                    pod_systems_accessories_text = "<b>Аксессуары POD систем</b>\n" \
+                                       "Список пуст"
+                else:
+                    pod_systems_accessories_text = "<b>Аксессуары POD систем</b>\n" \
+                                       "Возникли ошибки при работе с базой данных"
+
+                hookah_charcoal = get_requests.get_hookah_charcoal_by_shopid(shop_id)
+                if hookah_charcoal:
+                    hookah_charcoal_text = create_text.create_view_hookah_charcoal(
+                        hookah_charcoal)
+                elif hookah_charcoal == False:
+                    hookah_charcoal_text = "<b>Кальянный уголь</b>\n" \
+                                                   "Список пуст"
+                else:
+                    hookah_charcoal_text = "<b>Кальянный уголь</b>\n" \
+                                                   "Возникли ошибки при работе с базой данных"
+
+                hookah_tobacco = get_requests.get_hookah_tobacco_by_shopid(shop_id)
+                if hookah_tobacco:
+                    hookah_tobacco_text = create_text.create_view_hookah_tobacco(
+                        hookah_tobacco)
+                elif hookah_tobacco == False:
+                    hookah_tobacco_text = "<b>Кальянный уголь</b>\n" \
+                                           "Список пуст"
+                else:
+                    hookah_tobacco_text = "<b>Кальянный уголь</b>\n" \
+                                           "Возникли ошибки при работе с базой данных"
+
+                electronic_devices = get_requests.get_electronic_devices_by_shopid(shop_id)
+                if electronic_devices:
+                    electronic_devices_text = create_text.create_view_electronic_devices(
+                        electronic_devices)
+                elif electronic_devices == False:
+                    electronic_devices_text = "<b>Электронные устройства</b>\n" \
+                                          "Список пуст"
+                else:
+                    electronic_devices_text = "<b>Электронные устройства</b>\n" \
+                                          "Возникли ошибки при работе с базой данных"
+
+                await bot.answer_callback_query(callback_query.id)
+
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    disposable_cigarettes_text,language='alias'),parse_mode="HTML")
+
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    vaping_liquids_text,language='alias'), parse_mode="HTML")
+
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    pod_systems_text,language='alias'),parse_mode="HTML")
+
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    pod_systems_accessories_text, language='alias'), parse_mode="HTML")
+
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    hookah_charcoal_text, language='alias'), parse_mode="HTML")
+
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    hookah_tobacco_text, language='alias'), parse_mode="HTML")
+
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    electronic_devices_text, language='alias'), parse_mode="HTML")
+
+
+
+            elif user_is_admin == False:
+                await bot.answer_callback_query(callback_query.id)
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    ':pensive: Вы не являетесь Администратором', language='alias'))
+            else:
+                await bot.answer_callback_query(callback_query.id)
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+        elif is_complete_user == False:
+            await bot.answer_callback_query(callback_query.id)
+            await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
+        else:
+            await bot.answer_callback_query(callback_query.id)
+            await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+    elif is_incomplete_user == False:
+        await bot.answer_callback_query(callback_query.id)
+        await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+            ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
+    else:
+        await bot.answer_callback_query(callback_query.id)
+        await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+            ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+
+
 # Изменить товар
 @dp.callback_query_handler(lambda callback_query: 'edit_products_' in callback_query.data)
 async def some_callback_handler(callback_query: types.CallbackQuery):
@@ -2584,6 +2833,7 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
             ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+
 
 
 @dp.message_handler(lambda message: 'Изменить товар:' in message.text)
@@ -2741,6 +2991,4 @@ async def timetable(message: types.Message):
     else:
         await bot.send_message(message.from_user.id, text=emoji.emojize(
             ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-
-
 

@@ -176,8 +176,266 @@ def all_shops():
         sqlite_connection = sqlite3.connect(path_db)
         cursor = sqlite_connection.cursor()
         print("Подключен к SQLite")
-        sql_select_query = 'Select * FROM ShopsInfo'
+        sql_select_query = 'Select * FROM ShopsInfo ORDER BY shop_id'
         cursor.execute(sql_select_query, )
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def get_shop_by_id(shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'Select * FROM ShopsInfo WHERE shop_id = ?'
+        data = (shop_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce[0]
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def get_disposable_cigarettes_by_shopid(shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT DisposableСigarettes.item_id_in_shop,
+        Products.item_id,Brands.brand_name,Products.item_name,
+        DisposableСigarettes.item_taste,DisposableСigarettes.item_count_traction,ChargingTypes.type_name,DisposableСigarettes.item_count
+        FROM DisposableСigarettes INNER JOIN Products INNER JOIN Brands INNER JOIN ChargingTypes
+        ON Products.brand_id = Brands.brand_id and DisposableСigarettes.item_id = Products.item_id and ChargingTypes.type_id = DisposableСigarettes.item_charging_type
+        Where DisposableСigarettes.shop_id = ?
+        ORDER BY Products.item_id'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def get_vaping_liquids_by_shopid(shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT VapingLiquids.item_id_in_shop,
+        Products.item_id,Brands.brand_name,Products.item_name,
+        VapingLiquids.item_taste,VapingLiquids.item_fortress,VapingLiquids.item_size,VapingLiquids.item_count
+        FROM VapingLiquids INNER JOIN Products INNER JOIN Brands
+        ON Products.brand_id = Brands.brand_id and VapingLiquids.item_id = Products.item_id
+        Where VapingLiquids.shop_id = ?
+        ORDER BY Products.item_id'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def get_pod_systems_by_shopid(shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT PodSystems.item_id_in_shop,
+        Products.item_id,Brands.brand_name,Products.item_name,
+        PodSystems.item_count
+        FROM PodSystems INNER JOIN Products INNER JOIN Brands
+        ON Products.brand_id = Brands.brand_id and PodSystems.item_id = Products.item_id
+        Where PodSystems.shop_id = ?
+        ORDER BY Products.item_id'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def get_pod_systems_accessories_by_shopid(shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT PodSystemsAccessories.item_id_in_shop,
+        Products.item_id,Brands.brand_name,Products.item_name,
+        PodSystemsAccessories.item_count
+        FROM PodSystemsAccessories INNER JOIN Products INNER JOIN Brands
+        ON Products.brand_id = Brands.brand_id and PodSystemsAccessories.item_id = Products.item_id
+        Where PodSystemsAccessories.shop_id = ?
+        ORDER BY Products.item_id'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def get_hookah_charcoal_by_shopid(shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT HookahCharcoal.item_id_in_shop,
+        Products.item_id,Brands.brand_name,Products.item_name,
+        HookahCharcoal.item_count_in_box, SizeCharcoal.size_name ,HookahCharcoal.item_count
+        FROM HookahCharcoal INNER JOIN Products INNER JOIN Brands INNER JOIN SizeCharcoal
+        ON Products.brand_id = Brands.brand_id and HookahCharcoal.item_id = Products.item_id and SizeCharcoal.size_id = HookahCharcoal.item_size
+        Where HookahCharcoal.shop_id = ?
+        ORDER BY Products.item_id'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def get_hookah_tobacco_by_shopid(shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT HookahTobacco.item_id_in_shop,
+        Products.item_id,Brands.brand_name,Products.item_name,
+        HookahTobacco.item_taste, HookahTobacco.item_size ,HookahTobacco.item_count
+        FROM HookahTobacco INNER JOIN Products INNER JOIN Brands
+        ON Products.brand_id = Brands.brand_id and HookahTobacco.item_id = Products.item_id 
+        Where HookahTobacco.shop_id = ?
+        ORDER BY Products.item_id'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def get_electronic_devices_by_shopid(shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT ElectronicDevices.item_id_in_shop,
+        Products.item_id,Brands.brand_name,Products.item_name,
+        ElectronicDevices.item_count
+        FROM ElectronicDevices INNER JOIN Products INNER JOIN Brands
+        ON Products.brand_id = Brands.brand_id and ElectronicDevices.item_id = Products.item_id 
+        Where ElectronicDevices.shop_id = ?
+        ORDER BY Products.item_id'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query,data)
         responce = cursor.fetchall()
         if responce:
             cursor.close()
