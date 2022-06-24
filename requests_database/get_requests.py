@@ -224,6 +224,35 @@ def get_shop_by_id(shop_id:int):
             print("Соединение с SQLite закрыто")
 
 
+def get_product_brand_and_name(item_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Brands.brand_name, Products.item_name FROM Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id
+        Where Products.item_id = ?'''
+        data = (item_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce[0]
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
 def get_disposable_cigarettes_by_shopid(shop_id:int):
     try:
         sqlite_connection = sqlite3.connect(path_db)
@@ -841,6 +870,87 @@ def is_product_in_db(item_id):
             print("Соединение с SQLite закрыто")
 
 
+def is_product_in_shop(item_id,shop_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT * FROM Products WHERE item_id = ?'
+        data = (item_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            cursor.close()
+            return True
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_category_id(category_name:str):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT category_id FROM Categories WHERE category_name = ?'
+        data = (category_name,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            cursor.close()
+            return responce[0]
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_product_in_shop(name_table:str,shop_id:int,item_id_in_shop:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT * FROM ? WHERE shop_id = ? and item_id_in_shop = ?'
+        data = (name_table,shop_id,item_id_in_shop)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            cursor.close()
+            return True
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
 def is_product_corresponds_category(item_id,category_id):
     try:
         sqlite_connection = sqlite3.connect(path_db)
@@ -977,6 +1087,422 @@ def check_category_name(category_id):
             print("Соединение с SQLite закрыто")
 
 
+def check_liquid_info_in_all_shops():
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON VapingLiquids.item_id == Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE VapingLiquids.item_count > 0
+        GROUP BY VapingLiquids.item_id 
+        ORDER BY Brands.brand_name'''
+        cursor.execute(sql_select_query, )
+        responce = cursor.fetchall()
+        if responce:
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_liquid_info_in_shop(shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON VapingLiquids.item_id == Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE VapingLiquids.item_count > 0 and VapingLiquids.shop_id = ?
+        GROUP BY VapingLiquids.item_id 
+        ORDER BY Brands.brand_name'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchall()
+        if responce:
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_all_liquid_by_fortress(item_fortress:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON VapingLiquids.item_id == Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE VapingLiquids.item_fortress = ? and VapingLiquids.item_count > 0
+        GROUP BY VapingLiquids.item_id 
+        ORDER BY Brands.brand_name'''
+        data = (item_fortress,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_all_liquid_by_fortress_in_shop(item_fortress:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON VapingLiquids.item_id == Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE VapingLiquids.item_fortress = ? and VapingLiquids.item_count > 0 and VapingLiquids.shop_id = ?
+        GROUP BY VapingLiquids.item_id 
+        ORDER BY Brands.brand_name'''
+        data = (item_fortress,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+
+def check_liquid_fortress_in_all_shops():
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT VapingLiquids.item_fortress FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON VapingLiquids.item_id = Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE VapingLiquids.item_count > 0
+        GROUP BY VapingLiquids.item_fortress
+        ORDER BY Brands.brand_name'''
+        cursor.execute(sql_select_query, )
+        responce = cursor.fetchall()
+        if responce:
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_liquid_fortress_in_shop(shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT VapingLiquids.item_fortress FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON VapingLiquids.item_id = Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE VapingLiquids.item_count > 0 and VapingLiquids.shop_id = ?
+        GROUP BY VapingLiquids.item_fortress
+        ORDER BY Brands.brand_name'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchall()
+        if responce:
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_liquid_fortress_in_all_shops_by_id(item_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT VapingLiquids.item_fortress FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON VapingLiquids.item_id = Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE VapingLiquids.item_id =? and VapingLiquids.item_count > 0
+        GROUP BY VapingLiquids.item_fortress
+        ORDER BY Brands.brand_name'''
+        data = (item_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchall()
+        if responce:
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_liquid_fortress_in_shop_by_item(item_id,shop_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT VapingLiquids.item_fortress FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON VapingLiquids.item_id = Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE VapingLiquids.item_id =? and VapingLiquids.item_count > 0 and VapingLiquids.shop_id = ?
+        GROUP BY VapingLiquids.item_fortress
+        ORDER BY Brands.brand_name'''
+        data = (item_id,shop_id)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchall()
+        if responce:
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_taste_liquid_by_id_and_fortress(item_id:int,item_fortress:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT VapingLiquids.item_id,VapingLiquids.item_taste FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and VapingLiquids.item_id == Products.item_id
+        WHERE VapingLiquids.item_id = ? and VapingLiquids.item_fortress = ? and VapingLiquids.item_count > 0
+        GROUP BY VapingLiquids.item_taste'''
+        data = (item_id,item_fortress)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def shop_taste_liquid_by_id_and_fortress(item_id:int,item_fortress:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT VapingLiquids.item_id,VapingLiquids.item_taste FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and VapingLiquids.item_id == Products.item_id
+        WHERE VapingLiquids.item_id = ? and VapingLiquids.item_fortress = ? and VapingLiquids.item_count > 0
+        and VapingLiquids.shop_id = ?
+        GROUP BY VapingLiquids.item_taste'''
+        data = (item_id,item_fortress,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_characteristic_disposable_cigarette(item_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Brands.brand_name,Products.item_name,DisposableСigarettes.item_count_traction,ChargingTypes.type_name,Products.item_price FROM DisposableСigarettes INNER JOIN Products INNER JOIN Brands INNER JOIN ChargingTypes  
+        ON DisposableСigarettes.item_id == Products.item_id and Products.brand_id = Brands.brand_id and ChargingTypes.type_id = DisposableСigarettes.item_charging_type
+        WHERE Products.item_id = ?
+        GROUP BY DisposableСigarettes.item_id'''
+        data = (item_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_characteristic_hookah_tobacco(item_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Brands.brand_name,Products.item_name,HookahTobacco.item_size,Products.item_price FROM HookahTobacco INNER JOIN Products INNER JOIN Brands 
+        ON HookahTobacco.item_id == Products.item_id and Products.brand_id = Brands.brand_id 
+        WHERE Products.item_id = ?
+        GROUP BY HookahTobacco.item_id'''
+        data = (item_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_characteristic_hookah_charcoal(item_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Brands.brand_name,Products.item_name,SizeCharcoal.size_name,HookahCharcoal.item_count_in_box,Products.item_price FROM HookahCharcoal INNER JOIN Products INNER JOIN Brands INNER JOIN SizeCharcoal  
+        ON HookahCharcoal.item_id == Products.item_id and Products.brand_id = Brands.brand_id and SizeCharcoal.size_id = HookahCharcoal.item_size
+        WHERE Products.item_id = ?
+        GROUP BY HookahCharcoal.item_id'''
+        data = (item_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_characteristic_liquid(item_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Brands.brand_name,Products.item_name,VapingLiquids.item_fortress,VapingLiquids.item_size,Products.item_price FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON VapingLiquids.item_id == Products.item_id and Products.brand_id = Brands.brand_id 
+        WHERE Products.item_id = ?
+        GROUP BY VapingLiquids.item_fortress'''
+        data = (item_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchall()
+        if responce:
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
 def check_similar_pod(item_id:int,shop_id:int):
     try:
         sqlite_connection = sqlite3.connect(path_db)
@@ -1061,6 +1587,1392 @@ def check_similar_pod_accessories(item_id:int,shop_id:int):
                 print('Нет')
                 cursor.close()
                 return False
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+
+def check_products_with_category(category_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'SELECT item_id,category_name,brand_name,item_name,item_price FROM Products INNER JOIN Categories ' \
+                           'INNER JOIN Brands ON Products.category_id = Categories.category_id and ' \
+                           'Products.brand_id = Brands.brand_id Where Products.category_id = ?'
+        data = (category_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_all_brands_disposable_cigarettes_in_shops():
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Brands.brand_id,Brands.brand_name FROM DisposableСigarettes INNER JOIN Products INNER JOIN Brands 
+        ON DisposableСigarettes.item_id == Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE DisposableСigarettes.item_count > 0
+        GROUP BY Brands.brand_id'''
+        cursor.execute(sql_select_query,)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_all_brands_disposable_cigarettes_in_shop(shop_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Brands.brand_id,Brands.brand_name FROM DisposableСigarettes INNER JOIN Products INNER JOIN Brands 
+        ON DisposableСigarettes.item_id == Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE DisposableСigarettes.item_count > 0 and DisposableСigarettes.shop_id = ?
+        GROUP BY Brands.brand_id'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+
+def check_all_brands_hookah_tobacco_in_shops():
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Brands.brand_id,Brands.brand_name FROM HookahTobacco INNER JOIN Products INNER JOIN Brands 
+        ON HookahTobacco.item_id == Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE HookahTobacco.item_count > 0
+        GROUP BY Brands.brand_id'''
+        cursor.execute(sql_select_query,)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_all_brands_hookah_tobacco_in_shop(shop_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Brands.brand_id,Brands.brand_name FROM HookahTobacco INNER JOIN Products INNER JOIN Brands 
+        ON HookahTobacco.item_id == Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE HookahTobacco.item_count > 0 and HookahTobacco.shop_id = ?
+        GROUP BY Brands.brand_id'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_all_brands_hookah_tobacco_in_shop(shop_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Brands.brand_id,Brands.brand_name FROM HookahTobacco INNER JOIN Products INNER JOIN Brands 
+        ON HookahTobacco.item_id == Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE HookahTobacco.shop_id = ? and HookahTobacco.item_count > 0
+        GROUP BY Brands.brand_id'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+
+def check_all_brands_pod_systems_in_shops():
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Brands.brand_id,Brands.brand_name FROM PodSystems INNER JOIN Products INNER JOIN Brands 
+        ON PodSystems.item_id == Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE PodSystems.item_count > 0
+        GROUP BY Brands.brand_id'''
+        cursor.execute(sql_select_query,)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_all_brands_pod_systems_in_shop(shop_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Brands.brand_id,Brands.brand_name FROM PodSystems INNER JOIN Products INNER JOIN Brands 
+        ON PodSystems.item_id == Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE PodSystems.shop_id = ? and PodSystems.item_count > 0
+        GROUP BY Brands.brand_id'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_all_brands_pod_systems_accessories_in_shops():
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Brands.brand_id,Brands.brand_name FROM PodSystemsAccessories INNER JOIN Products INNER JOIN Brands 
+        ON PodSystemsAccessories.item_id == Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE PodSystemsAccessories.item_count > 0 
+        GROUP BY Brands.brand_id'''
+        cursor.execute(sql_select_query,)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_all_brands_pod_systems_accessories_in_shop(shop_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Brands.brand_id,Brands.brand_name FROM PodSystemsAccessories INNER JOIN Products INNER JOIN Brands 
+        ON PodSystemsAccessories.item_id == Products.item_id and Products.brand_id = Brands.brand_id
+        WHERE PodSystemsAccessories.shop_id = ? and PodSystemsAccessories.item_count > 0 
+        GROUP BY Brands.brand_id'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_all_size_hookah_charcoal_in_shops():
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT HookahCharcoal.item_size, SizeCharcoal.size_name FROM HookahCharcoal INNER JOIN SizeCharcoal
+        ON HookahCharcoal.item_size = SizeCharcoal.size_id
+        WHERE HookahCharcoal.item_count > 0
+        GROUP BY HookahCharcoal.item_size'''
+        cursor.execute(sql_select_query,)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_all_size_hookah_charcoal_in_shop(shop_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT HookahCharcoal.item_size, SizeCharcoal.size_name FROM HookahCharcoal INNER JOIN SizeCharcoal
+        ON HookahCharcoal.item_size = SizeCharcoal.size_id
+        WHERE HookahCharcoal.shop_id = ? and HookahCharcoal.item_count > 0
+        GROUP BY HookahCharcoal.item_size'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_disposable_cigarette_name_and_price_by_brand_id(brand_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM DisposableСigarettes INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and DisposableСigarettes.item_id == Products.item_id
+        WHERE Brands.brand_id == ?  and category_id = 1  and DisposableСigarettes.item_count > 0
+        GROUP BY DisposableСigarettes.item_id'''
+        data = (brand_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def shop_disposable_cigarette_name_and_price_by_brand_id(brand_id:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM DisposableСigarettes INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and DisposableСigarettes.item_id == Products.item_id
+        WHERE Brands.brand_id == ?  and category_id = 1  and DisposableСigarettes.item_count > 0 and DisposableСigarettes.shop_id = ?
+        GROUP BY DisposableСigarettes.item_id'''
+        data = (brand_id,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_hookah_tobacco_name_and_price_by_brand_id(brand_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM HookahTobacco INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and HookahTobacco.item_id == Products.item_id
+        WHERE Brands.brand_id == ?  and category_id = 6 and HookahTobacco.item_count > 0
+        GROUP BY HookahTobacco.item_id'''
+        data = (brand_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def shop_hookah_tobacco_name_and_price_by_brand_id(brand_id:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM HookahTobacco INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and HookahTobacco.item_id == Products.item_id
+        WHERE Brands.brand_id == ?  and category_id = 6 and HookahTobacco.item_count > 0 and HookahTobacco.shop_id = ?
+        GROUP BY HookahTobacco.item_id'''
+        data = (brand_id,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_all_electronic_devices_in_shops():
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM ElectronicDevices INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and ElectronicDevices.item_id == Products.item_id
+        WHERE category_id = 7 and ElectronicDevices.item_count > 0
+        GROUP BY ElectronicDevices.item_id'''
+        cursor.execute(sql_select_query,)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_all_electronic_devices_in_shop(shop_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM ElectronicDevices INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and ElectronicDevices.item_id == Products.item_id
+        WHERE category_id = 7 and ElectronicDevices.item_count > 0 and ElectronicDevices.shop_id = ?
+        GROUP BY ElectronicDevices.item_id'''
+        data = (shop_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+
+def check_pod_systems_name_and_price_by_brand_id(brand_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM PodSystems INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and PodSystems.item_id == Products.item_id
+        WHERE Brands.brand_id == ?  and category_id = 3
+        GROUP BY PodSystems.item_id'''
+        data = (brand_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def shop_pod_systems_name_and_price_by_brand_id(brand_id:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM PodSystems INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and PodSystems.item_id == Products.item_id
+        WHERE Brands.brand_id == ?  and category_id = 3 and PodSystems.item_count > 0 and PodSystems.shop_id = ?
+        GROUP BY PodSystems.item_id'''
+        data = (brand_id,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_hookah_charcoal_name_and_price_by_size_id(size_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM HookahCharcoal INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and HookahCharcoal.item_id == Products.item_id
+        WHERE HookahCharcoal.item_size = ?  and category_id = 5 and HookahCharcoal.item_count > 0
+        GROUP BY HookahCharcoal.item_id'''
+        data = (size_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def shop_hookah_charcoal_name_and_price_by_size_id(size_id:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM HookahCharcoal INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and HookahCharcoal.item_id == Products.item_id
+        WHERE HookahCharcoal.item_size = ?  and category_id = 5 and HookahCharcoal.item_count > 0
+        and HookahCharcoal.shop_id = ?
+        GROUP BY HookahCharcoal.item_id'''
+        data = (size_id,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+
+def check_pod_accessories_name_and_price_by_brand_id(brand_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM PodSystemsAccessories INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and PodSystemsAccessories.item_id == Products.item_id
+        WHERE Brands.brand_id == ?  and category_id = 4 and PodSystemsAccessories.item_count > 0
+        GROUP BY PodSystemsAccessories.item_id'''
+        data = (brand_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def shop_pod_accessories_name_and_price_by_brand_id(brand_id:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT Products.item_id,Brands.brand_name,Products.item_name,Products.item_price FROM PodSystemsAccessories INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and PodSystemsAccessories.item_id == Products.item_id
+        WHERE Brands.brand_id == ?  and category_id = 4 and PodSystemsAccessories.item_count > 0 
+        and PodSystemsAccessories.shop_id = ?
+        GROUP BY PodSystemsAccessories.item_id'''
+        data = (brand_id,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+
+def check_taste_disposable_cigarette(item_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT DisposableСigarettes.item_id,DisposableСigarettes.item_taste FROM DisposableСigarettes INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and DisposableСigarettes.item_id == Products.item_id
+        WHERE DisposableСigarettes.item_id = ? and DisposableСigarettes.item_count > 0
+        GROUP BY DisposableСigarettes.item_taste'''
+        data = (item_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def shop_taste_disposable_cigarette(item_id:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT DisposableСigarettes.item_id,DisposableСigarettes.item_taste FROM DisposableСigarettes INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and DisposableСigarettes.item_id == Products.item_id
+        WHERE DisposableСigarettes.item_id = ? and DisposableСigarettes.item_count > 0 and DisposableСigarettes.shop_id = ?
+        GROUP BY DisposableСigarettes.item_taste'''
+        data = (item_id,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_taste_hookah_tobacco_in_shop(item_id:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT HookahTobacco.item_id,HookahTobacco.item_taste FROM HookahTobacco INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and HookahTobacco.item_id == Products.item_id
+        WHERE HookahTobacco.item_id = ? and HookahTobacco.item_count > 0 and HookahTobacco.shop_id = ?
+        GROUP BY HookahTobacco.item_taste'''
+        data = (item_id,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_taste_liquid(item_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT VapingLiquids.item_id,VapingLiquids.item_taste FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and VapingLiquids.item_id == Products.item_id
+        WHERE VapingLiquids.item_id = ? and VapingLiquids.item_count > 0
+        GROUP BY VapingLiquids.item_taste'''
+        data = (item_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_taste_hookah_tobacco(item_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT HookahTobacco.item_id,HookahTobacco.item_taste FROM HookahTobacco INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and HookahTobacco.item_id == Products.item_id
+        WHERE HookahTobacco.item_id = ? and HookahTobacco.item_count > 0
+        GROUP BY HookahTobacco.item_taste'''
+        data = (item_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_taste_liquid_with_fortress(item_id:int,item_fortress:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT VapingLiquids.item_id,VapingLiquids.item_taste FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and VapingLiquids.item_id == Products.item_id
+        WHERE VapingLiquids.item_id = ? and VapingLiquids.item_fortress = ? and VapingLiquids.item_count > 0
+        GROUP BY VapingLiquids.item_taste'''
+        data = (item_id,item_fortress)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_taste_liquid_with_fortress_in_shop(item_id:int,item_fortress:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT VapingLiquids.item_id,VapingLiquids.item_taste FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and VapingLiquids.item_id == Products.item_id
+        WHERE VapingLiquids.item_id = ? and VapingLiquids.item_fortress = ? and VapingLiquids.item_count > 0
+        and VapingLiquids.shop_id = ?
+        GROUP BY VapingLiquids.item_taste'''
+        data = (item_id,item_fortress,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_shop_id_by_disposable_cigarettes(item_id:int,item_taste):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT DisposableСigarettes.shop_id FROM DisposableСigarettes INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and DisposableСigarettes.item_id == Products.item_id
+        WHERE DisposableСigarettes.item_id = ? and DisposableСigarettes.item_taste = ? and DisposableСigarettes.item_count > 0
+        GROUP BY DisposableСigarettes.shop_id'''
+        data = (item_id,item_taste)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def is_disposable_cigarettes_in_shop(item_id:int,item_taste,shop_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT DisposableСigarettes.shop_id FROM DisposableСigarettes INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and DisposableСigarettes.item_id == Products.item_id
+        WHERE DisposableСigarettes.item_id = ? and DisposableСigarettes.item_taste = ? and DisposableСigarettes.item_count > 0 
+        and DisposableСigarettes.shop_id = ?
+        GROUP BY DisposableСigarettes.shop_id'''
+        data = (item_id,item_taste,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            cursor.close()
+            return True
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_shop_id_by_hookah_tobacco(item_id:int,item_taste):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT HookahTobacco.shop_id FROM HookahTobacco INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and HookahTobacco.item_id == Products.item_id
+        WHERE HookahTobacco.item_id = ? and HookahTobacco.item_taste = ? and HookahTobacco.item_count > 0
+        GROUP BY HookahTobacco.shop_id'''
+        data = (item_id,item_taste)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def is_hookah_tobacco_in_shop(item_id:int,item_taste,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT HookahTobacco.shop_id FROM HookahTobacco INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and HookahTobacco.item_id == Products.item_id
+        WHERE HookahTobacco.item_id = ? and HookahTobacco.item_taste = ? and HookahTobacco.item_count > 0
+        and HookahTobacco.shop_id = ?
+        GROUP BY HookahTobacco.shop_id'''
+        data = (item_id,item_taste,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            cursor.close()
+            return True
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_shop_id_by_electronic_devices(item_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT ElectronicDevices.shop_id FROM ElectronicDevices INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and ElectronicDevices.item_id == Products.item_id
+        WHERE ElectronicDevices.item_id = ? and ElectronicDevices.item_count > 0
+        GROUP BY ElectronicDevices.shop_id'''
+        data = (item_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def is_electronic_devices_in_shop(item_id:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT ElectronicDevices.shop_id FROM ElectronicDevices INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and ElectronicDevices.item_id == Products.item_id
+        WHERE ElectronicDevices.item_id = ? and ElectronicDevices.item_count > 0 and ElectronicDevices.shop_id = ?
+        GROUP BY ElectronicDevices.shop_id'''
+        data = (item_id,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchone()
+        if responce:
+            cursor.close()
+            return True
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_shop_id_by_pod_systems(item_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT PodSystems.shop_id FROM PodSystems INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and PodSystems.item_id == Products.item_id
+        WHERE PodSystems.item_id = ? and PodSystems.item_count > 0
+        GROUP BY PodSystems.shop_id'''
+        data = (item_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def is_pod_systems_in_shop(item_id:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT PodSystems.shop_id FROM PodSystems INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and PodSystems.item_id == Products.item_id
+        WHERE PodSystems.item_id = ? and PodSystems.item_count > 0 and PodSystems.shop_id = ?
+        GROUP BY PodSystems.shop_id'''
+        data = (item_id,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            cursor.close()
+            return True
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_shop_id_by_pod_accessories(item_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT PodSystemsAccessories.shop_id FROM PodSystemsAccessories INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and PodSystemsAccessories.item_id == Products.item_id
+        WHERE PodSystemsAccessories.item_id = ? and PodSystemsAccessories.item_count > 0
+        GROUP BY PodSystemsAccessories.shop_id'''
+        data = (item_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def is_pod_accessories_in_shop(item_id:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT PodSystemsAccessories.shop_id FROM PodSystemsAccessories INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and PodSystemsAccessories.item_id == Products.item_id
+        WHERE PodSystemsAccessories.item_id = ? and PodSystemsAccessories.item_count > 0 and PodSystemsAccessories.shop_id = ?
+        GROUP BY PodSystemsAccessories.shop_id'''
+        data = (item_id,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_shop_id_by_hookah_charcoal(item_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT HookahCharcoal.shop_id FROM HookahCharcoal INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and HookahCharcoal.item_id == Products.item_id
+        WHERE HookahCharcoal.item_id = ? and HookahCharcoal.item_count > 0
+        GROUP BY HookahCharcoal.shop_id'''
+        data = (item_id,)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def is_hookah_charcoal_in_shop(item_id:int,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT HookahCharcoal.shop_id FROM HookahCharcoal INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and HookahCharcoal.item_id == Products.item_id
+        WHERE HookahCharcoal.item_id = ? and HookahCharcoal.item_count > 0 and HookahCharcoal.shop_id = ?
+        GROUP BY HookahCharcoal.shop_id'''
+        data = (item_id,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchone()
+        if responce:
+            cursor.close()
+            return True
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_shop_id_by_liquid(item_id:int,item_taste,item_fortress):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT VapingLiquids.shop_id FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and VapingLiquids.item_id == Products.item_id
+        WHERE VapingLiquids.item_id = ? and VapingLiquids.item_taste = ? and VapingLiquids.item_fortress = ?  and VapingLiquids.item_count > 0
+        GROUP BY VapingLiquids.shop_id'''
+        data = (item_id,item_taste,item_fortress)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+
+def check_shop_id_by_liquid_fortress(item_id:int,item_taste,item_fortress):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT VapingLiquids.shop_id FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and VapingLiquids.item_id == Products.item_id
+        WHERE VapingLiquids.item_id = ? and VapingLiquids.item_taste = ? and VapingLiquids.item_fortress = ? and VapingLiquids.item_count > 0
+        GROUP BY VapingLiquids.shop_id'''
+        data = (item_id,item_taste,item_fortress)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return list()
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def is_liquid_fortress_in_shop(item_id:int,item_taste,item_fortress,shop_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT VapingLiquids.shop_id FROM VapingLiquids INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and VapingLiquids.item_id == Products.item_id
+        WHERE VapingLiquids.item_id = ? and VapingLiquids.item_taste = ? and VapingLiquids.item_fortress = ? and VapingLiquids.item_count > 0
+        and VapingLiquids.shop_id = ?
+        GROUP BY VapingLiquids.shop_id'''
+        data = (item_id,item_taste,item_fortress,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            cursor.close()
+            return True
         elif responce is None:
             print('Нет')
             cursor.close()

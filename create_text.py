@@ -114,7 +114,7 @@ def create_view_pod_systems(pod_systems:list) -> str:
 
 
 def create_view_pod_systems_accessories(pod_systems_accessories:list) -> str:
-    finish_string = "<b>Аксессуры POD систем</b>\n"
+    finish_string = "<b>Комплектующие POD cистем</b>\n"
     for pod_systems_accessory in pod_systems_accessories:
 
         item_id_in_shop = pod_systems_accessory[0]

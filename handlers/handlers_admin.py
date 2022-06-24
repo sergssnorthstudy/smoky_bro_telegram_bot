@@ -1035,8 +1035,8 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
                                                    parse_mode="HTML")
                 elif category_id == 4:
                     if categoty_name is not None:
-                        if categoty_name == 'Комплектующие POD cистемы':
-                            short_cat = 'Комплектующую POD cистемы'
+                        if categoty_name == 'Комплектующие POD cистем':
+                            short_cat = 'Комплектующую POD cистем'
                             await bot.answer_callback_query(callback_query.id)
                             await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
                                 f'Напишите мне какие {categoty_name.lower()} и в какие магазины вы хотите добавить\n\n'
@@ -1751,7 +1751,7 @@ async def timetable(message: types.Message):
 
 
 # Добавить комплектующие pod системы
-@dp.message_handler(lambda message: 'Добавить комплектующие pod cистемы:' in message.text)
+@dp.message_handler(lambda message: 'Добавить комплектующие pod cистем:' in message.text)
 async def timetable(message: types.Message):
     user_id = message.from_user.id
     is_incomplete_user = get_requests.is_incomplete_user(user_id)
@@ -1764,7 +1764,7 @@ async def timetable(message: types.Message):
                 category_name = "POD системы"
                 short_cat = "POD система"
 
-                result = message.text.split('Добавить комплектующие pod cистемы:')
+                result = message.text.split('Добавить комплектующие pod cистем:')
                 pod_systems_accessories = result[1]
                 if '\n' in pod_systems_accessories:
                     pod_systems_accessories = pod_systems_accessories.split('\n')
@@ -1813,10 +1813,10 @@ async def timetable(message: types.Message):
                                 ':pensive: Ошибка при работе с Базой Данных', language='alias'))
                 else:
                     await bot.send_message(message.from_user.id, text=emoji.emojize(
-                        ':x: Вы написали: "Добавить комплектующие pod cистемы:", но указываете одну комплектующую pod систем\n'
+                        ':x: Вы написали: "Добавить комплектующие pod cистем:", но указываете одну комплектующую pod систем\n'
                         'Чтобы добавить несколько комплектующих pod cистемы, напишите как в примере: \n\n'
                         'Структура товара в магазине такая:\n(№ Магазина),(ID Товара),(Кол-во штук)\n\n'
-                                f'<b>Пример</b>  "Добавить комплектующие pod cистемы: 2,15,10\n'
+                                f'<b>Пример</b>  "Добавить комплектующие pod cистем: 2,15,10\n'
                                 f'1,17,7"\n', language='alias'),
                                                    parse_mode="HTML")
 
@@ -2606,7 +2606,10 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
                 await bot.answer_callback_query(callback_query.id)
                 await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
                     'Напишите мне у какого товара вы хотите изменить кол-во\n'
-                    '',
+                    'Структура изменения кол-ва товара в магазине такая (ID Магазина),(Категория),(ID Продукта В Магазине),(Кол-во штук)\n\n'
+                    '<b>Пример №1:</b>  "Изменить кол-во товара: 1,Одноразовые сигареты,25,30"\n'
+                    '<b>Пример №2:</b>  "Изменить кол-во товаров: 1,Жидкости,25,30\n'
+                    '1,Жидкости,40,30"',
                     language='alias'),
                                        parse_mode="HTML")
                 await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
@@ -2638,6 +2641,97 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
         await bot.answer_callback_query(callback_query.id)
         await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
             ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+
+
+# Изменить кол-во товара
+@dp.message_handler(lambda message: 'Изменить кол-во товара:' in message.text)
+async def timetable(message: types.Message):
+    user_id = message.from_user.id
+    is_incomplete_user = get_requests.is_incomplete_user(user_id)
+    if is_incomplete_user:
+        is_complete_user = get_requests.is_complete_user(user_id)
+        if is_complete_user:
+            user_is_admin = get_requests.check_user_is_admin(user_id)
+            if user_is_admin:
+                result = message.text.split('Изменить кол-во товара:')
+                products = result[1]
+                if '\n' in products:
+                    await bot.send_message(message.from_user.id, text=emoji.emojize(
+                        ':x: Вы написали: "Изменить кол-во товара:", но указываете несколько товаров\n'
+                        'Чтобы изменить кол-во товара, напишите как в примере: \n\n'
+                        'Структура изменения кол-ва товара в магазине такая (ID Магазина),(Категория),(ID Продукта В Магазине),(Кол-во штук)\n\n'
+                                 '<b>Пример:</b>  "Изменить кол-во товара: 1,Одноразовые сигареты,25,30"\n', language='alias'),
+                                                   parse_mode="HTML")
+                else:
+                    products = products.strip()
+                    products = products.split(',')
+                    shop_id = int(products[0].strip())
+                    category_name = products[1].strip()
+                    item_id_in_shop = int(products[2].strip())
+                    item_count = int(products[3].strip())
+
+                    category_id = get_requests.check_category_id(category_name)
+                    if category_id:
+                        if category_id == 1:
+                            name_table = 'DisposableСigarettes'
+                        elif category_id == 2:
+                            name_table = 'VapingLiquids'
+                        elif category_id == 3:
+                            name_table = 'PodSystems'
+                        elif category_id == 4:
+                            name_table = 'PodSystemsAccessories'
+                        elif category_id == 5:
+                            name_table = 'HookahCharcoal'
+                        elif category_id == 6:
+                            name_table = 'HookahTobacco'
+                        elif category_id == 7:
+                            name_table = 'ElectronicDevices'
+                        else:
+                            name_table = 'other_table'
+                        if name_table != 'other_table':
+                            is_product_in_shop = get_requests.check_product_in_shop(name_table,shop_id,item_id_in_shop)
+                            if is_product_in_shop:
+                                pass
+                            elif is_product_in_shop == False:
+                                await bot.send_message(message.from_user.id, text=emoji.emojize(
+                                    f':x: Вы указали продукт с ID Продукта В Магазине: {item_id_in_shop}, которого нет в магазине с ID {shop_id}',
+                                    language='alias'))
+                            else:
+                                await bot.send_message(message.from_user.id, text=emoji.emojize(
+                                    ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+                        elif name_table == 'other_table':
+                            await bot.send_message(message.from_user.id, text=emoji.emojize(
+                                f':x: Вы указали категорию, для которой не был написан алгоритм изменения кол-ва товара',
+                                language='alias'))
+                    elif category_id == False:
+                        await bot.send_message(message.from_user.id, text=emoji.emojize(
+                            f':x: Вы указали не существующую категорию', language='alias'))
+                    else:
+                        await bot.send_message(message.from_user.id, text=emoji.emojize(
+                            ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+
+
+
+            elif user_is_admin == False:
+                await bot.send_message(message.from_user.id, text=emoji.emojize(
+                    ':pensive: Вы не являетесь Администратором', language='alias'))
+            else:
+                await bot.send_message(message.from_user.id, text=emoji.emojize(
+                    ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+        elif is_complete_user == False:
+            await bot.send_message(message.from_user.id, text=emoji.emojize(
+                ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
+        else:
+            await bot.send_message(message.from_user.id, text=emoji.emojize(
+                ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+
+    elif is_incomplete_user == False:
+        await bot.send_message(message.from_user.id, text=emoji.emojize(
+            ':pensive: Ваш аккаунт не настроен, напишите: "/start" чтобы исправить это', language='alias'))
+    else:
+        await bot.send_message(message.from_user.id, text=emoji.emojize(
+            ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+
 
 
 
@@ -2688,10 +2782,10 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
                 if pod_systems_accessories:
                     pod_systems_accessories_text = create_text.create_view_pod_systems_accessories(pod_systems_accessories)
                 elif pod_systems_accessories == False:
-                    pod_systems_accessories_text = "<b>Аксессуары POD систем</b>\n" \
+                    pod_systems_accessories_text = "<b>Комплектующие POD cистем</b>\n" \
                                        "Список пуст"
                 else:
-                    pod_systems_accessories_text = "<b>Аксессуары POD систем</b>\n" \
+                    pod_systems_accessories_text = "<b>Комплектующие POD cистем</b>\n" \
                                        "Возникли ошибки при работе с базой данных"
 
                 hookah_charcoal = get_requests.get_hookah_charcoal_by_shopid(shop_id)
