@@ -45,6 +45,29 @@ def record_user_phone(user_id: int, phone_number : str) -> None:
             print("Соединение с SQLite закрыто")
 
 
+def update_shop_id_by_user(user_id:int, shop_id :int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        insert_with_param = 'UPDATE Users SET user_shop = ? WHERE user_id = ?'
+        data = (shop_id, user_id)
+        cursor.execute(insert_with_param, data)
+        sqlite_connection.commit()
+        print("Переменные Python успешно обновлены в таблице Users")
+        cursor.close()
+        return True
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        print("Соединение с SQLite закрыто")
+        return False
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
 def record_user_role_buyer(user_id: int) -> None:
     try:
         sqlite_connection = sqlite3.connect(path_db)
@@ -61,6 +84,56 @@ def record_user_role_buyer(user_id: int) -> None:
         print("Ошибка при работе с SQLite", error)
         sqlite_connection.close()
         print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def create_receipt(user_id: int,shop_id: int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        discount = 0
+        receipt_status = 2
+        insert_with_param = 'INSERT INTO Receipts (shop_id, employee_id, discount,receipt_status) VALUES (?, ?, ?, ?)'
+        data = (shop_id,user_id,discount,receipt_status)
+        cursor.execute(insert_with_param, data)
+        sqlite_connection.commit()
+        print("Переменные Python успешно вставлены в таблицу Roles")
+        cursor.close()
+        return True
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        print("Соединение с SQLite закрыто")
+        return False
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def add_sale(item_id:int,item_id_in_shop:int,item_count:int,employee_id: int,shop_id: int,receipt_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sale_status = 2
+        insert_with_param = '''INSERT INTO Sales (item_id, item_id_in_shop,item_count,employee_id,shop_id,sale_status,receipt_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)'''
+        data = (item_id,item_id_in_shop,item_count,employee_id,shop_id,sale_status,receipt_id)
+        cursor.execute(insert_with_param, data)
+        sqlite_connection.commit()
+        print("Переменные Python успешно вставлены в таблицу Roles")
+        cursor.close()
+        return True
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        print("Соединение с SQLite закрыто")
+        return False
     finally:
         if sqlite_connection:
             sqlite_connection.close()
@@ -314,6 +387,72 @@ def update_brand_in_id(brand_id:int,brand_name:str):
         print("Подключен к SQLite")
         insert_with_param =  'UPDATE Brands SET brand_name = ? WHERE brand_id = ?'
         data = (brand_name,brand_id)
+        cursor.execute(insert_with_param, data)
+        sqlite_connection.commit()
+        print("Переменные Python успешно обновлены в таблицу Brands")
+        return True
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        print("Соединение с SQLite закрыто")
+        return False
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def close_receipt(id_receipt:int,discount:int,date):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        insert_with_param =  'UPDATE Receipts SET discount = ?, receipt_status = 1, date = ? WHERE id_receipt = ?'
+        data = (discount,date,id_receipt)
+        cursor.execute(insert_with_param, data)
+        sqlite_connection.commit()
+        print("Переменные Python успешно обновлены в таблицу Brands")
+        return True
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        print("Соединение с SQLite закрыто")
+        return False
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def close_sales(receipt_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        insert_with_param =  'UPDATE Sales SET sale_status = 1 WHERE receipt_id = ?'
+        data = (receipt_id,)
+        cursor.execute(insert_with_param, data)
+        sqlite_connection.commit()
+        print("Переменные Python успешно обновлены в таблицу Brands")
+        return True
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        print("Соединение с SQLite закрыто")
+        return False
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def delete_position_from_receipt(sales_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        insert_with_param =  'DELETE FROM Sales WHERE sales_id = ?'
+        data = (sales_id,)
         cursor.execute(insert_with_param, data)
         sqlite_connection.commit()
         print("Переменные Python успешно обновлены в таблицу Brands")

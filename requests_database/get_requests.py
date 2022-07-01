@@ -87,7 +87,7 @@ def is_complete_user(user_id: int) -> bool:
             print("Соединение с SQLite закрыто")
 
 
-def check_user_is_seller(user_id: int) -> None:
+def check_user_is_seller(user_id: int):
     try:
         sqlite_connection = sqlite3.connect(path_db)
         cursor = sqlite_connection.cursor()
@@ -101,6 +101,33 @@ def check_user_is_seller(user_id: int) -> None:
             cursor.close()
             return True
         elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_shop_id_by_user(user_id: int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = 'Select user_shop FROM Users WHERE user_id = ?'
+        data = (user_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce[0] is not None:
+            cursor.close()
+            return responce[0]
+        elif responce[0] is None:
             print('Нет')
             cursor.close()
             return False
@@ -156,6 +183,149 @@ def check_user_is_buyer(user_id: int) -> None:
         if responce:
             cursor.close()
             return True
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def is_user_have_receipts(user_id: int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''Select * FROM Receipts 
+        WHERE employee_id = ?
+        GROUP BY employee_id'''
+        data = (user_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            cursor.close()
+            return True
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def is_user_have_open_receipt(user_id: int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''Select * FROM Receipts 
+        WHERE employee_id = ? and receipt_status = 2'''
+        data = (user_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            cursor.close()
+            return True
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_open_receipt_id(user_id: int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''Select Receipts.id_receipt FROM Receipts 
+        WHERE employee_id = ? and receipt_status = 2'''
+        data = (user_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            cursor.close()
+            return responce[0]
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+
+def check_all_sales_item_in_receipt(open_receipt_id: int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''Select Sales.item_id,Sales.item_id_in_shop,Brands.brand_name,Products.item_name,Sales.item_count, Products.item_price FROM Sales INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and Sales.item_id = Products.item_id
+        WHERE receipt_id = ?'''
+        data = (open_receipt_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_sales_for_delete_position(open_receipt_id: int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''Select Sales.sales_id FROM Sales 
+        WHERE receipt_id = ?'''
+        data = (open_receipt_id,)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
         elif not responce:
             print('Нет')
             cursor.close()
@@ -2595,6 +2765,37 @@ def is_disposable_cigarettes_in_shop(item_id:int,item_taste,shop_id):
             print("Соединение с SQLite закрыто")
 
 
+def check_disposable_cigarettes_id_in_shop(item_id:int,item_taste,shop_id):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''SELECT DisposableСigarettes.item_id_in_shop,DisposableСigarettes.item_id FROM DisposableСigarettes INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and DisposableСigarettes.item_id == Products.item_id
+        WHERE DisposableСigarettes.item_id = ? and DisposableСigarettes.item_taste = ? and DisposableСigarettes.item_count > 0 
+        and DisposableСigarettes.shop_id = ?
+        GROUP BY DisposableСigarettes.shop_id'''
+        data = (item_id,item_taste,shop_id)
+        cursor.execute(sql_select_query,data)
+        responce = cursor.fetchone()
+        if responce is not None:
+            cursor.close()
+            return responce
+        elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
 def check_shop_id_by_hookah_tobacco(item_id:int,item_taste):
     try:
         sqlite_connection = sqlite3.connect(path_db)
@@ -2974,6 +3175,64 @@ def is_liquid_fortress_in_shop(item_id:int,item_taste,item_fortress,shop_id:int)
             cursor.close()
             return True
         elif responce is None:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_close_receipts(user_id: int, date):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''Select * FROM Receipts 
+        WHERE employee_id = ? and receipt_status = 1 and date(date) = ? '''
+        data = (user_id,date)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
+            print('Нет')
+            cursor.close()
+            return False
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+        sqlite_connection.close()
+        return None
+        print("Соединение с SQLite закрыто")
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+            print("Соединение с SQLite закрыто")
+
+
+def check_close_sales(user_id: int, receipt_id:int):
+    try:
+        sqlite_connection = sqlite3.connect(path_db)
+        cursor = sqlite_connection.cursor()
+        print("Подключен к SQLite")
+        sql_select_query = '''Select Sales.item_id,Sales.item_id_in_shop,Brands.brand_name,Products.item_name,Sales.item_count,Products.item_price FROM Sales 
+        INNER JOIN Products INNER JOIN Brands 
+        ON Products.brand_id = Brands.brand_id and Sales.item_id == Products.item_id
+        WHERE employee_id = ? and sale_status = 1 and receipt_id = ? '''
+        data = (user_id,receipt_id)
+        cursor.execute(sql_select_query, data)
+        responce = cursor.fetchall()
+        if responce:
+            cursor.close()
+            return responce
+        elif not responce:
             print('Нет')
             cursor.close()
             return False

@@ -2287,7 +2287,8 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
         is_complete_user = get_requests.is_complete_user(user_id)
         if is_complete_user:
             user_is_buyer = get_requests.check_user_is_buyer(user_id)
-            if user_is_buyer:
+            user_is_seller = get_requests.check_user_is_seller(user_id)
+            if user_is_buyer and user_is_seller == False:
 
                 full_info = callback_query.data.split('shop_model_disposable_cigarette_')[1]
                 item_id = int(full_info.split('_')[0])
@@ -2358,7 +2359,44 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
                     await bot.answer_callback_query(callback_query.id)
                     await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
                         ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+            elif user_is_buyer and user_is_seller:
+                full_info = callback_query.data.split('shop_model_disposable_cigarette_')[1]
+                item_id = int(full_info.split('_')[0])
+                shop_id = int(full_info.split('_')[1])
+                product = get_requests.get_product_brand_and_name(item_id)
+                product_brand = product[0]
+                product_name = product[1]
 
+                all_taste = get_requests.shop_taste_disposable_cigarette(item_id, shop_id)
+                if all_taste:
+                    markup_products_name_and_price = types.InlineKeyboardMarkup()
+                    for taste in all_taste:
+                        item_id = taste[0]
+                        taste = taste[1]
+                        markup_products_name_and_price.add(
+                                types.InlineKeyboardButton(text=f'{taste}',
+                                                           callback_data=f"shop_disp_{item_id}_{taste}_{shop_id}"))
+                            # callback_data = check_availability_disposable_cigarette
+                    await bot.delete_message(chat_id=callback_query.from_user.id,
+                                                 message_id=callback_query.message.message_id)
+                    await bot.answer_callback_query(callback_query.id)
+
+                    await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                            f'Выберите вкус, у модели {product_brand} {product_name}:', language='alias'),
+                                               reply_markup=markup_products_name_and_price)
+
+                elif all_taste == False:
+                    await bot.delete_message(chat_id=callback_query.from_user.id,
+                                             message_id=callback_query.message.message_id)
+                    await bot.answer_callback_query(callback_query.id)
+                    await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                        'У данной модели нет вкусов в магазине', language='alias'))
+                else:
+                    await bot.delete_message(chat_id=callback_query.from_user.id,
+                                             message_id=callback_query.message.message_id)
+                    await bot.answer_callback_query(callback_query.id)
+                    await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                        ':pensive: Ошибка при работе с Базой Данных', language='alias'))
             elif user_is_buyer == False:
                 await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
                     ':pensive: Вы не являетесь покупателем, обратитесь к администратору', language='alias'))
@@ -2388,7 +2426,8 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
         is_complete_user = get_requests.is_complete_user(user_id)
         if is_complete_user:
             user_is_buyer = get_requests.check_user_is_buyer(user_id)
-            if user_is_buyer:
+            user_is_seller = get_requests.check_user_is_seller(user_id)
+            if user_is_buyer and user_is_seller == False:
 
                 model_full = callback_query.data.split('shop_disp_')[1]
                 item_id = int(model_full.split('_')[0])
@@ -2428,7 +2467,59 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
                     await bot.answer_callback_query(callback_query.id)
                     await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
                         ':pensive: Ошибка при работе с Базой Данных', language='alias'))
+            elif user_is_buyer and user_is_seller:
+                model_full = callback_query.data.split('shop_disp_')[1]
+                item_id = int(model_full.split('_')[0])
+                taste = model_full.split('_')[1]
+                shop_id = model_full.split('_')[2]
 
+                product = get_requests.get_product_brand_and_name(item_id)
+                product_brand = product[0]
+                product_name = product[1]
+
+                item = get_requests.check_disposable_cigarettes_id_in_shop(item_id,taste,shop_id)
+                item_id_in_shop = item[0]
+                item_id = item[1]
+                markup_count_disposable_cigarettes = types.InlineKeyboardMarkup(row_width=2)
+                kb_1 = types.InlineKeyboardButton(text=emoji.emojize(':one:', language='alias'),
+                                           callback_data=f"buy_disp_{item_id_in_shop}_{item_id}_1")
+                kb_2 = types.InlineKeyboardButton(text=emoji.emojize(':two:', language='alias'),
+                                                  callback_data=f"buy_disp_{item_id_in_shop}_{item_id}_2")
+                kb_3 = types.InlineKeyboardButton(text=emoji.emojize(':three:', language='alias'),
+                                                  callback_data=f"buy_disp_{item_id_in_shop}_{item_id}_3")
+                kb_4 = types.InlineKeyboardButton(text=emoji.emojize(':four:', language='alias'),
+                                                  callback_data=f"buy_disp_{item_id_in_shop}_{item_id}_4")
+                kb_5 = types.InlineKeyboardButton(text=emoji.emojize(':five:', language='alias'),
+                                                  callback_data=f"buy_disp_{item_id_in_shop}_{item_id}_5")
+                kb_6 = types.InlineKeyboardButton(text=emoji.emojize(':six:', language='alias'),
+                                                  callback_data=f"buy_disp_{item_id_in_shop}_{item_id}_6")
+                kb_7 = types.InlineKeyboardButton(text=emoji.emojize(':seven:', language='alias'),
+                                                  callback_data=f"buy_disp_{item_id_in_shop}_{item_id}_7")
+                kb_8 = types.InlineKeyboardButton(text=emoji.emojize(':eight:', language='alias'),
+                                                  callback_data=f"buy_disp_{item_id_in_shop}_{item_id}_8")
+                kb_9 = types.InlineKeyboardButton(text=emoji.emojize(':nine:', language='alias'),
+                                                  callback_data=f"buy_disp_{item_id_in_shop}_{item_id}_9")
+                kb_10 = types.InlineKeyboardButton(text=emoji.emojize(':keycap_ten:', language='alias'),
+                                                  callback_data=f"buy_disp_{item_id_in_shop}_{item_id}_10")
+
+                kb_back = types.InlineKeyboardButton(text=emoji.emojize(':arrow_left: Назад', language='alias'),
+                                                  callback_data=f"back_buy_disp")
+
+
+                markup_count_disposable_cigarettes.row(kb_1,kb_2)
+                markup_count_disposable_cigarettes.row(kb_3, kb_4)
+                markup_count_disposable_cigarettes.row(kb_5, kb_6)
+                markup_count_disposable_cigarettes.row(kb_7, kb_8)
+                markup_count_disposable_cigarettes.row(kb_9, kb_10)
+                markup_count_disposable_cigarettes.add(kb_back)
+
+                await bot.delete_message(chat_id=callback_query.from_user.id,
+                                         message_id=callback_query.message.message_id)
+                await bot.answer_callback_query(callback_query.id)
+                await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
+                    'Выберите кол-во проданных штук\n'
+                    f'Одноразовой сигареты <b>{product_brand} {product_name}</b> со вкусом <b>{taste}</b>', language='alias'),
+                                       reply_markup=markup_count_disposable_cigarettes,parse_mode='HTML')
             elif user_is_buyer == False:
                 await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
                     ':pensive: Вы не являетесь покупателем, обратитесь к администратору', language='alias'))
@@ -3136,10 +3227,6 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
             ':pensive: Ошибка при работе с Базой Данных', language='alias'))
 
 
-
-
-
-
 # Pod системы, Пользователь выбрал сортировку по брендам
 @dp.callback_query_handler(lambda callback_query: 'shop_brand_pod_systems_' in callback_query.data)
 async def some_callback_handler(callback_query: types.CallbackQuery):
@@ -3273,12 +3360,6 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
             ':pensive: Ошибка при работе с Базой Данных', language='alias'))
 
 
-
-
-
-
-
-
 # Pod системы аксессуары, Пользователь выбрал сортировку по брендам
 @dp.callback_query_handler(lambda callback_query: 'shop_brand_pod_accessories_' in callback_query.data)
 async def some_callback_handler(callback_query: types.CallbackQuery):
@@ -3409,13 +3490,6 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
     else:
         await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
             ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-
-
-
-
-
-
-
 
 
 # Кальянный уголь, Пользователь выбрал сортировку по размерам
@@ -3634,19 +3708,6 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
     else:
         await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
             ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # Кальянный табак, Пользователь выбрал бренд
@@ -3885,9 +3946,6 @@ async def some_callback_handler(callback_query: types.CallbackQuery):
     else:
         await bot.send_message(callback_query.from_user.id, text=emoji.emojize(
             ':pensive: Ошибка при работе с Базой Данных', language='alias'))
-
-
-
 
 
 # Электронные устройства, Пользователю показываются магазины
